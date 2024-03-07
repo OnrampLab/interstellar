@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "circleci.circleci",
+    "editorconfig.editorconfig",
+    "github.vscode-pull-request-github",
+    "ms-python.black-formatter",
+    "ms-python.python",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}
