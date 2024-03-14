@@ -1,4 +1,4 @@
-from interstellar.api_client import APIClient
+from transstellar.api_client import APIClient
 
 
 class TestAPIClient:

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "interstellar"
+name = "transstellar"
 version = "0.2.0"
 description = "A pytest framework"
 authors = ["Onramplab Dev <dev@onramplab.com>"]

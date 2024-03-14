@@ -1,3 +1,3 @@
-# interstellar
+# transstellar
 
 A pytest framework
