@@ -44,6 +44,8 @@ class Element(Loggable):
         return cls.XPATH_CURRENT
 
     def find_global_element(self, target_element_class):
+        self.logger.debug(f"finding global element for {target_element_class.__name__}")
+
         target_element_xpath = target_element_class.get_current_element_xpath()
         element = self.find_global_dom_element_by_xpath(target_element_xpath)
 
@@ -53,6 +55,8 @@ class Element(Loggable):
             raise Exception("Could not find element of {element_class.__name__}")
 
     def refresh(self):
+        self.logger.debug("refresh current element")
+
         xpath = self.get_current_element_xpath()
         dom_element = self.find_global_dom_element_by_xpath(xpath)
 
@@ -61,6 +65,8 @@ class Element(Loggable):
         return self.get_current_dom_element()
 
     def find_element(self, target_element_class):
+        self.logger.debug(f"find element: {target_element_class.__name__}")
+
         current_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
         element = current_element.find_element(By.XPATH, f".{target_element_xpath}")
@@ -73,6 +79,8 @@ class Element(Loggable):
             raise Exception("Could not find element of {element_class.__name__}")
 
     def find_elements(self, target_element_class):
+        self.logger.debug(f"find elements: {target_element_class.__name__}")
+
         current_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
         elements = current_element.find_elements(By.XPATH, f".{target_element_xpath}")
@@ -90,6 +98,10 @@ class Element(Loggable):
             raise Exception("Could not find elements of {element_class.__name__}")
 
     def find_element_by_label(self, target_element_class, label: str):
+        self.logger.debug(
+            f"find element ({target_element_class.__name__}) by label: {label}"
+        )
+
         current_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
         element = current_element.find_element(
@@ -104,6 +116,10 @@ class Element(Loggable):
             )
 
     def wait_for_global_element_to_disappear(self, target_element_class):
+        self.logger.debug(
+            f"wait for global element to dissapear: {target_element_class.__name__}"
+        )
+
         target_element_xpath = target_element_class.get_current_element_xpath()
 
         return wait_for_element_to_disappear_by_xpath(
@@ -122,28 +138,44 @@ class Element(Loggable):
         return self.dom_element
 
     def get_current_html(self):
-        return self.get_current_dom_element().get_attribute("innerHTML")
+        html = self.get_current_dom_element().get_attribute("innerHTML")
+
+        self.logger.debug(f"current HTML: {html}")
+
+        return html
 
     def find_global_dom_element_by_xpath(self, xpath: str):
+        self.logger.debug(f"finding global dom element by xpath: {xpath}")
+
         return wait_for_element_by_xpath(self.driver, xpath)
 
     def find_dom_elements_by_tag_name(self, tag_name: str):
+        self.logger.debug(f"finding dom element by tag name: {tag_name}")
+
         dom_element = self.get_current_dom_element()
 
         return dom_element.find_elements(By.XPATH, f".//{tag_name}")
 
     def find_dom_element_by_xpath(self, xpath: str):
+        self.logger.debug(f"finding dom element by xpath: {xpath}")
+
         dom_element = self.get_current_dom_element()
 
         return dom_element.find_element(By.XPATH, f".{xpath}")
 
     def wait_for_dom_element_to_disappear_by_xpath(self, xpath: str):
+        self.logger.debug(f"wait for dom element to disappear by xpath: {xpath}")
+
         return wait_for_element_to_disappear_by_xpath(self.driver, f".{xpath}")
 
     def wait_for_dom_element_to_click_by_xpath(self, xpath: str):
+        self.logger.debug(f"wait for dom element to click by xpath: {xpath}")
+
         return wait_for_element_to_click_by_xpath(self.driver, f".{xpath}")
 
     def wait_for_dom_element_by_selector(self, css_selector):
+        self.logger.debug(f"wait for dom element by CSS selector: {css_selector}")
+
         return wait_for_element_by_selector(self.driver, css_selector)
 
     def screenshot(self, file_name):
@@ -152,6 +184,8 @@ class Element(Loggable):
         self.driver.save_screenshot(screenshot_path)
 
     def sleep(self, seconds: float):
+        self.logger.debug(f"sleep: {seconds} seconds")
+
         time.sleep(seconds)
 
     def __set_current_dom_element(self, element):
