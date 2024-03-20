@@ -4,3 +4,17 @@ services:
     build: .
     volumes:
       - .:/project
+    command:
+      >
+        bash -i -c -e
+        "
+        poetry install --no-root;
+        tail -f /dev/null;
+        "
+  selenium:
+    image: selenium/standalone-chrome
+    environment:
+      - VNC_NO_PASSWORD=1 # Don't ask for a password
+      - SE_NODE_SESSION_TIMEOUT=1000
+    ports:
+      - ${SELENIUM_PORT:-7900}:7900
