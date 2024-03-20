@@ -1,4 +1,5 @@
 __all__ = [
+    "Application",
     "BaseApiTest",
     "BasePage",
     "BaseTest",
@@ -11,6 +12,7 @@ __all__ = [
     "MainConfig",
 ]
 
+from .application import Application
 from .base_api_test import BaseApiTest
 from .base_page import BasePage
 from .base_test import BaseTest
