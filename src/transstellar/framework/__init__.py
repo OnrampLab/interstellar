@@ -11,6 +11,7 @@ __all__ = [
     "Loggable",
     "Logger",
     "MainConfig",
+    "Module",
 ]
 
 from .application import Application
@@ -25,3 +26,4 @@ from .handle_ui_error import handle_ui_error
 from .loggable import Loggable
 from .logger import Logger
 from .main_config import MainConfig
+from .module import Module
