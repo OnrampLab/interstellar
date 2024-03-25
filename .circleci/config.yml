@@ -1,0 +1,43 @@
+version: 2.1
+orbs:
+  python: circleci/python@2.1.1
+
+parameters:
+  run-schedule:
+    type: boolean
+    default: false
+  environment:
+    type: string
+    default: staging
+
+workflows:
+  test:
+    when:
+      not: << pipeline.parameters.run-schedule >>
+    jobs:
+      - run-test
+
+  nightly-test:
+    when: << pipeline.parameters.run-schedule >>
+    jobs:
+      - run-test
+
+jobs:
+  run-test:
+    docker:
+      - image: cimg/python:3.12
+      - image: selenium/standalone-chrome
+    environment:
+      SELENIUM_CMD_EXECUTOR: "http://localhost:4444/wd/hub"
+    steps:
+      - checkout
+
+      - python/install-packages:
+            pkg-manager: poetry
+
+      - run:
+          name: Run tests
+          command: poetry run pytest -n 4 --dist=loadscope --junitxml=test-results/junit.xml
+
+      - store_test_results:
+          path: test-results
