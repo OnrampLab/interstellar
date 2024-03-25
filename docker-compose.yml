@@ -5,6 +5,7 @@ services:
     volumes:
       - .:/project
     environment:
+      - POETRY_PYPI_TOKEN_PYPI=${POETRY_PYPI_TOKEN_PYPI}
       - PYTHONPATH=./src
     command:
       >
