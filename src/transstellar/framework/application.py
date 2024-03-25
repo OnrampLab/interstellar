@@ -10,32 +10,48 @@ class Application:
     container: Injector
     testrun_uid: str
     driver: WebDriver
+    options: any
+    e2e_enabled: bool = False
+    closed: bool = False
 
     def __init__(self, request, testrun_uid, options=None):
+        logging.info("Creating application")
+
         self.testrun_uid = testrun_uid
         self.container = Injector()
+        self.options = options
 
-        if options is None:
-            self.options = {"enable_e2e": False}
-        else:
-            self.options = options
+        self.__configure_log__(request.config)
 
-        if self.is_e2e_enabled():
-            self.driver = self.init_driver()
+    def init_e2e(self):
+        if self.e2e_enabled:
+            return
 
-        self.configure_log(request.config)
+        self.e2e_enabled = True
+
+        self.driver = self.__init_driver__()
 
     def is_e2e_enabled(self):
-        return self.options["enable_e2e"]
+        return self.e2e_enabled
+
+    def get(self, key: any):
+        return self.container.get(key)
 
     def close(self):
+        if self.closed:
+            return
+
+        logging.info("Closing application")
+
         if self.is_e2e_enabled():
-            logging.info("Driver closed")
             self.driver.quit()
+            logging.info("Driver closed")
+
+        self.closed = True
 
         logging.info("Application closed")
 
-    def configure_log(self, config):
+    def __configure_log__(self, config):
         worker_id = os.environ.get("PYTEST_XDIST_WORKER")
         if worker_id is not None:
             with open(file=f"logs/pytest_{worker_id}.log", mode="w", encoding="utf-8"):
@@ -47,7 +63,8 @@ class Application:
                 level=config.getini("log_file_level"),
             )
 
-    def init_driver(self) -> WebDriver:
+    def __init_driver__(self) -> WebDriver:
+        logging.info("Initializing driver")
         selenium_cmd_executor = os.environ.get(
             "SELENIUM_CMD_EXECUTOR", "http://selenium:4444/wd/hub"
         )
@@ -59,6 +76,3 @@ class Application:
         logging.info("Driver initialized")
 
         return driver
-
-    def get(self, key: any):
-        return self.container.get(key)

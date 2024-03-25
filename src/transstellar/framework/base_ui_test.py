@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from selenium.webdriver import Remote
+from selenium.webdriver.remote.webdriver import WebDriver
 
 from .base_test import BaseTest
 from .utils import (
@@ -14,11 +14,12 @@ from .utils import (
 
 @pytest.mark.UI
 class BaseUITest(BaseTest):
-    driver: Remote
+    driver: WebDriver
 
     @pytest.fixture(autouse=True)
     def setup_method_framework_base_ui(self, driver):
         self.driver = driver
+        self.app.init_e2e()
 
     def get_page(self, page_class):
         return page_class(self.injector, self.driver)
