@@ -1,9 +1,12 @@
 import logging
 import os
+from typing import Type
 
 from injector import Injector
 from selenium.webdriver import ChromeOptions, Remote
 from selenium.webdriver.remote.webdriver import WebDriver
+
+from .module import Module
 
 
 class Application:
@@ -36,6 +39,10 @@ class Application:
 
     def get(self, key: any):
         return self.container.get(key)
+
+    def register_module(self, module_class: Type[Module]):
+        module = module_class(self)
+        self.container.binder.bind(module_class, module)
 
     def close(self):
         if self.closed:
