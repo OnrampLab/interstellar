@@ -105,10 +105,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-/config.yml
-/config.yml.dev
-/config.yml.staging
-/config.yml.production
 
 # Spyder project settings
 .spyderproject
