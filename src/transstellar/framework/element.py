@@ -1,11 +1,14 @@
 import os
 import time
+from typing import Type, TypeVar
 
+from injector import Injector
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
+from .application import Application
 from .loggable import Loggable
-from .logger import Logger
 from .utils import (
     wait_for_element_by_selector,
     wait_for_element_by_xpath,
@@ -13,22 +16,27 @@ from .utils import (
     wait_for_element_to_disappear_by_xpath,
 )
 
+T = TypeVar("T")
+
 
 class Element(Loggable):
     XPATH_CURRENT = None
 
     label = ""
-    injector: any
-    driver: any
+    app: Application
+    injector: Injector
+    driver: WebDriver
     dom_element: any = None
 
-    def __init__(self, injector, driver) -> None:
+    def __init__(self, app=None) -> None:
         super().__init__()
-        self.injector = injector
-        self.driver = driver
+        self.app = app
+        self.injector = app.container
+        self.driver = app.driver
         self.init()
 
     def init(self):
+        # should wait until the element shows
         pass
 
     def init_after_dom_element_is_set(self):
@@ -43,7 +51,7 @@ class Element(Loggable):
 
         return cls.XPATH_CURRENT
 
-    def find_global_element(self, target_element_class):
+    def find_global_element(self, target_element_class: Type[T]) -> T:
         self.logger.debug(f"finding global element for {target_element_class.__name__}")
 
         target_element_xpath = target_element_class.get_current_element_xpath()
@@ -60,11 +68,11 @@ class Element(Loggable):
         xpath = self.get_current_element_xpath()
         dom_element = self.find_global_dom_element_by_xpath(xpath)
 
-        self.__set_current_dom_element(dom_element)
+        self.set_current_dom_element(dom_element)
 
         return self.get_current_dom_element()
 
-    def find_element(self, target_element_class):
+    def find_element(self, target_element_class: Type[T]) -> T:
         self.logger.debug(f"find element: {target_element_class.__name__}")
 
         current_element = self.get_current_dom_element()
@@ -97,7 +105,7 @@ class Element(Loggable):
         else:
             raise Exception("Could not find elements of {element_class.__name__}")
 
-    def find_element_by_label(self, target_element_class, label: str):
+    def find_element_by_label(self, target_element_class: Type[T], label: str) -> T:
         self.logger.debug(
             f"find element ({target_element_class.__name__}) by label: {label}"
         )
@@ -126,14 +134,14 @@ class Element(Loggable):
             self.driver, f".{target_element_xpath}"
         )
 
-    def get_current_dom_element(self):
+    def get_current_dom_element(self) -> WebElement:
         if self.dom_element:
             return self.dom_element
 
         xpath = self.get_current_element_xpath()
         dom_element = self.find_global_dom_element_by_xpath(xpath)
 
-        self.__set_current_dom_element(dom_element)
+        self.set_current_dom_element(dom_element)
 
         return self.dom_element
 
@@ -179,6 +187,11 @@ class Element(Loggable):
         return wait_for_element_by_selector(self.driver, css_selector)
 
     def screenshot(self, file_name):
+        screenshots_dir = os.path.join(os.getcwd(), "screenshots")
+
+        if not os.path.exists(screenshots_dir):
+            os.makedirs(screenshots_dir)
+
         screenshot_path = os.path.join(os.getcwd(), f"screenshots/{file_name}")
 
         self.driver.save_screenshot(screenshot_path)
@@ -188,16 +201,16 @@ class Element(Loggable):
 
         time.sleep(seconds)
 
-    def __set_current_dom_element(self, element):
+    def set_current_dom_element(self, element):
         self.dom_element = element
 
         self.init_after_dom_element_is_set()
 
     def __create_child_element(
-        self, child_element_class, child_dom_element, label: str = ""
-    ):
-        child_element = child_element_class(self.injector, self.driver)
-        child_element.__set_current_dom_element(child_dom_element)
+        self, child_element_class: Type[T], child_dom_element, label: str = ""
+    ) -> T:
+        child_element = child_element_class(self.app)
+        child_element.set_current_dom_element(child_dom_element)
 
         if label:
             child_element.label = label

@@ -1,14 +1,14 @@
 import pytest
-from injector import Injector
 
+from .application import Application
 from .logger import Logger
 
 
 class BaseTest:
-    injector: Injector
+    app: Application
     logger: Logger
 
     @pytest.fixture(autouse=True)
-    def setup_method_base_test(self, injector: Injector):
-        self.injector = injector
+    def setup_method_base_test(self, app: Application):
+        self.app = app
         self.logger = Logger(self.__class__.__name__)

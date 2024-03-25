@@ -17,14 +17,19 @@ class BaseUITest(BaseTest):
     driver: WebDriver
 
     @pytest.fixture(autouse=True)
-    def setup_method_framework_base_ui(self, driver):
-        self.driver = driver
+    def setup_method_framework_base_ui(self):
         self.app.init_e2e()
+        self.driver = self.app.driver
 
     def get_page(self, page_class):
-        return page_class(self.injector, self.driver)
+        return page_class(self.app)
 
     def screenshot(self, file_name):
+        screenshots_dir = os.path.join(os.getcwd(), "screenshots")
+
+        if not os.path.exists(screenshots_dir):
+            os.makedirs(screenshots_dir)
+
         screenshot_path = os.path.join(os.getcwd(), f"screenshots/{file_name}")
 
         self.driver.save_screenshot(screenshot_path)
