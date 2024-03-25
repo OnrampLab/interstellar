@@ -1,0 +1,181 @@
+import os
+from time import time
+
+import pytest
+from selenium.webdriver.remote.webelement import WebElement
+
+from transstellar.framework import BaseUITest, Element, handle_ui_error
+
+
+class Page(Element):
+    XPATH_CURRENT = "//body"
+
+
+class Header(Element):
+    XPATH_CURRENT = "//header"
+
+
+class Image(Element):
+    XPATH_CURRENT = "//img"
+
+
+class Button(Element):
+    XPATH_CURRENT = "//button"
+
+
+class HeaderIconLink(Element):
+    XPATH_CURRENT = '//a[@href="https://github.com/"]'
+
+
+@handle_ui_error()
+class TestElement(BaseUITest):
+    def test_constructor(self):
+        element = Header(self.app)
+
+        assert element is not None
+
+    def teardown_method(self, method):  # pylint: disable=W0613
+        screenshot_path = os.path.join(os.getcwd(), "screenshots", "screenshot.png")
+        if os.path.exists(screenshot_path):
+            os.remove(screenshot_path)
+
+    def test_get_current_element_xpath(self):
+        xpath = Header.get_current_element_xpath()
+
+        assert xpath == Header.XPATH_CURRENT
+
+    def test_get_current_element_xpath_with_empty_xpath_current(self):
+        with pytest.raises(Exception) as exc_info:
+            Element.get_current_element_xpath()
+
+        assert (
+            str(exc_info.value)
+            == "Element should set XPATH_CURRENT in order to get element"
+        )
+
+    def test_get_current_dom_element(self):
+        self.app.driver.get("https://github.com")
+
+        element = Header(self.app)
+        dom_element = element.get_current_dom_element()
+
+        assert isinstance(dom_element, WebElement)
+
+    def test_set_current_dom_element(self):
+        # should think a way to test
+        pass
+
+    def test_get_current_html(self):
+        self.app.driver.get("https://github.com")
+
+        element = Header(self.app)
+        html = element.get_current_html()
+
+        assert "<button" in html
+
+    def test_refresh(self):
+        self.app.driver.get("https://github.com")
+
+        element = HeaderIconLink(self.app)
+        dom_element = element.get_current_dom_element()
+        html = dom_element.get_attribute("innerHTML")
+
+        new_dom_element = element.refresh()
+        new_html = new_dom_element.get_attribute("innerHTML")
+
+        # NOTE: there is a chance to error
+        assert html == new_html
+
+    def test_find_global_element(self):
+        self.app.driver.get("https://github.com")
+
+        page = Page(self.app)
+        element = page.find_global_element(Header)
+
+        assert isinstance(element, Header)
+
+    def test_find_element(self):
+        self.app.driver.get("https://github.com")
+
+        page = Page(self.app)
+        header = page.find_element(Header)
+        icon = header.find_element(HeaderIconLink)
+
+        assert isinstance(icon, HeaderIconLink)
+
+    def test_find_elements(self):
+        self.app.driver.get("https://github.com")
+
+        page = Page(self.app)
+        images = page.find_elements(Image)
+
+        assert len(images) > 1
+
+    def test_find_element_by_label(self):
+        self.app.driver.get("https://github.com")
+
+        page = Page(self.app)
+        sign_up_button = page.find_element_by_label(Button, "Sign up for GitHub")
+
+        assert isinstance(sign_up_button, Button)
+
+    def test_wait_for_global_element_to_disappear(self):
+        # should think a way to test
+        pass
+
+    def test_find_global_dom_element_by_xpath(self):
+        self.app.driver.get("https://github.com")
+
+        page = Page(self.app)
+        dom_element = page.find_global_dom_element_by_xpath(Header.XPATH_CURRENT)
+
+        assert isinstance(dom_element, WebElement)
+
+    def test_find_dom_elements_by_tag_name(self):
+        self.app.driver.get("https://github.com")
+
+        page = Page(self.app)
+        dom_elements = page.find_dom_elements_by_tag_name("header")
+
+        assert isinstance(dom_elements[0], WebElement)
+
+    def test_find_dom_element_by_xpath(self):
+        self.app.driver.get("https://github.com")
+
+        page = Page(self.app)
+        dom_element = page.find_dom_element_by_xpath(Header.XPATH_CURRENT)
+
+        assert isinstance(dom_element, WebElement)
+
+    def test_wait_for_dom_element_to_disappear_by_xpath(self):
+        # should think a way to test
+        pass
+
+    def test_wait_for_dom_element_to_click_by_xpath(self):
+        self.app.driver.get("https://github.com")
+
+        page = Page(self.app)
+        dom_element = page.wait_for_dom_element_to_click_by_xpath(Header.XPATH_CURRENT)
+
+        assert isinstance(dom_element, WebElement)
+
+    def test_wait_for_dom_element_by_selector(self):
+        self.app.driver.get("https://github.com")
+
+        page = Page(self.app)
+        dom_element = page.wait_for_dom_element_by_selector(".header-logged-out")
+
+        assert isinstance(dom_element, WebElement)
+
+    def test_sleep(self):
+        self.app.driver.get("https://github.com")
+
+        start_time = time()
+
+        page = Page(self.app)
+        page.sleep(2)
+
+        end_time = time()
+        elapsed_time = end_time - start_time
+
+        assert 1.9 <= elapsed_time <= 2.1
