@@ -4,6 +4,8 @@ services:
     build: .
     volumes:
       - .:/project
+    environment:
+      - PYTHONPATH=./src
     command:
       >
         bash -i -c -e
