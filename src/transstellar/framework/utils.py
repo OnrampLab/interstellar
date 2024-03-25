@@ -10,7 +10,7 @@ def wait_for_element(driver, condition, timeout=10) -> WebElement:
     try:
         return WebDriverWait(driver, timeout).until(condition)
     except Exception as e:
-        screenshot_path = os.path.join(os.getcwd(), f"screenshots/wait_exception.png")
+        screenshot_path = os.path.join(os.getcwd(), "screenshots/wait_exception.png")
 
         driver.save_screenshot(screenshot_path)
 

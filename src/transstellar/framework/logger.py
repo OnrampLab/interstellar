@@ -31,8 +31,5 @@ class Logger:
     def fatal(self, msg, *args, **kwargs):
         logging.debug(self.__get_message(msg), *args, **kwargs)
 
-    def fatal(self, msg, *args, **kwargs):
-        logging.debug(self.__get_message(msg), *args, **kwargs)
-
     def __get_message(self, msg: str):
         return f"[{self.class_name}] {msg}"
