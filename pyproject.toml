@@ -12,3 +12,7 @@ injector = "^0.21.0"
 pyyaml = "^6.0"
 selenium = "^4.18.0"
 requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+poetry-plugin-up = "^0.7.1"
+
