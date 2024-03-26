@@ -206,6 +206,11 @@ class Element(Loggable):
 
         self.init_after_dom_element_is_set()
 
+    def scroll_to_view(self):
+        self.app.driver.execute_script(
+            "arguments[0].scrollIntoView(false);", self.dom_element
+        )
+
     def __create_child_element(
         self, child_element_class: Type[T], child_dom_element, label: str = ""
     ) -> T:

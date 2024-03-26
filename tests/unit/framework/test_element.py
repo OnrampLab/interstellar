@@ -1,5 +1,7 @@
 import os
+import unittest
 from time import time
+from unittest.mock import MagicMock
 
 import pytest
 from selenium.webdriver.remote.webelement import WebElement
@@ -28,7 +30,7 @@ class HeaderIconLink(Element):
 
 
 @handle_ui_error()
-class TestElement(BaseUITest):
+class TestElement(BaseUITest, unittest.TestCase):
     def test_constructor(self):
         element = Header(self.app)
 
@@ -179,3 +181,14 @@ class TestElement(BaseUITest):
         elapsed_time = end_time - start_time
 
         assert 1.9 <= elapsed_time <= 2.1
+
+    def test_scroll_to_view(self):
+        self.app.close()
+        self.app.driver = MagicMock()
+
+        page = Page(self.app)
+        page.scroll_to_view()
+
+        self.app.driver.execute_script.assert_called_once_with(
+            "arguments[0].scrollIntoView(false);", page.dom_element
+        )
