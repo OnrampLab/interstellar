@@ -31,6 +31,13 @@ class HeaderIconLink(Element):
 
 @handle_ui_error()
 class TestElement(BaseUITest, unittest.TestCase):
+    page: Page
+
+    @pytest.fixture(autouse=True)
+    def setup_method_test(self):
+        self.page = Page(self.app)
+        # self.page.sleep(5)
+
     def test_constructor(self):
         element = Header(self.app)
 
@@ -91,16 +98,14 @@ class TestElement(BaseUITest, unittest.TestCase):
     def test_find_global_element(self):
         self.app.driver.get("https://github.com")
 
-        page = Page(self.app)
-        element = page.find_global_element(Header)
+        element = self.page.find_global_element(Header)
 
         assert isinstance(element, Header)
 
     def test_find_element(self):
         self.app.driver.get("https://github.com")
 
-        page = Page(self.app)
-        header = page.find_element(Header)
+        header = self.page.find_element(Header)
         icon = header.find_element(HeaderIconLink)
 
         assert isinstance(icon, HeaderIconLink)
@@ -108,16 +113,14 @@ class TestElement(BaseUITest, unittest.TestCase):
     def test_find_elements(self):
         self.app.driver.get("https://github.com")
 
-        page = Page(self.app)
-        images = page.find_elements(Image)
+        images = self.page.find_elements(Image)
 
         assert len(images) > 1
 
     def test_find_element_by_label(self):
         self.app.driver.get("https://github.com")
 
-        page = Page(self.app)
-        sign_up_button = page.find_element_by_label(Button, "Sign up for GitHub")
+        sign_up_button = self.page.find_element_by_label(Button, "Sign up for GitHub")
 
         assert isinstance(sign_up_button, Button)
 
@@ -128,24 +131,21 @@ class TestElement(BaseUITest, unittest.TestCase):
     def test_find_global_dom_element_by_xpath(self):
         self.app.driver.get("https://github.com")
 
-        page = Page(self.app)
-        dom_element = page.find_global_dom_element_by_xpath(Header.XPATH_CURRENT)
+        dom_element = self.page.find_global_dom_element_by_xpath(Header.XPATH_CURRENT)
 
         assert isinstance(dom_element, WebElement)
 
     def test_find_dom_elements_by_tag_name(self):
         self.app.driver.get("https://github.com")
 
-        page = Page(self.app)
-        dom_elements = page.find_dom_elements_by_tag_name("header")
+        dom_elements = self.page.find_dom_elements_by_tag_name("header")
 
         assert isinstance(dom_elements[0], WebElement)
 
     def test_find_dom_element_by_xpath(self):
         self.app.driver.get("https://github.com")
 
-        page = Page(self.app)
-        dom_element = page.find_dom_element_by_xpath(Header.XPATH_CURRENT)
+        dom_element = self.page.find_dom_element_by_xpath(Header.XPATH_CURRENT)
 
         assert isinstance(dom_element, WebElement)
 
@@ -156,18 +156,15 @@ class TestElement(BaseUITest, unittest.TestCase):
     def test_wait_for_dom_element_to_click_by_xpath(self):
         self.app.driver.get("https://github.com")
 
-        page = Page(self.app)
-        page.sleep(3)
-
-        dom_element = page.wait_for_dom_element_to_click_by_xpath(Header.XPATH_CURRENT)
+        dom_element = self.page.wait_for_dom_element_to_click_by_xpath(
+            Header.XPATH_CURRENT
+        )
 
         assert isinstance(dom_element, WebElement)
 
     def test_wait_for_dom_element_by_selector(self):
         self.app.driver.get("https://github.com")
-
-        page = Page(self.app)
-        dom_element = page.wait_for_dom_element_by_selector(".header-logged-out")
+        dom_element = self.page.wait_for_dom_element_by_selector(".header-logged-out")
 
         assert isinstance(dom_element, WebElement)
 
@@ -176,8 +173,7 @@ class TestElement(BaseUITest, unittest.TestCase):
 
         start_time = time()
 
-        page = Page(self.app)
-        page.sleep(2)
+        self.page.sleep(2)
 
         end_time = time()
         elapsed_time = end_time - start_time
@@ -188,9 +184,8 @@ class TestElement(BaseUITest, unittest.TestCase):
         self.app.close()
         self.app.driver = MagicMock()
 
-        page = Page(self.app)
-        page.scroll_to_view()
+        self.page.scroll_to_view()
 
         self.app.driver.execute_script.assert_called_once_with(
-            "arguments[0].scrollIntoView(false);", page.dom_element
+            "arguments[0].scrollIntoView(false);", self.page.dom_element
         )
