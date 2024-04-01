@@ -157,6 +157,8 @@ class TestElement(BaseUITest, unittest.TestCase):
         self.app.driver.get("https://github.com")
 
         page = Page(self.app)
+        page.sleep(3)
+
         dom_element = page.wait_for_dom_element_to_click_by_xpath(Header.XPATH_CURRENT)
 
         assert isinstance(dom_element, WebElement)

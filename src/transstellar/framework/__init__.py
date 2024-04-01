@@ -1,5 +1,6 @@
 __all__ = [
     "Application",
+    "ApplicationBootstrapper",
     "BaseApiTest",
     "BasePage",
     "BaseTest",
@@ -15,6 +16,7 @@ __all__ = [
 ]
 
 from .application import Application
+from .application_bootstrapper import ApplicationBootstrapper
 from .base_api_test import BaseApiTest
 from .base_page import BasePage
 from .base_test import BaseTest

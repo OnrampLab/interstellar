@@ -1,11 +1,10 @@
 from modules.github.github_module import GithubModule
 from transstellar.framework import Application
+from transstellar.framework.application_bootstrapper import (
+    ApplicationBootstrapper as BaseApplicationBootstrapper,
+)
 
 
-class ApplicationBootstrapper:
-    def create_app(self, request, testrun_uid):
-        application = Application(request, testrun_uid)
-
-        application.register_module(GithubModule)
-
-        return application
+class ApplicationBootstrapper(BaseApplicationBootstrapper):
+    def bootstrap(self, app: Application):
+        app.register_module(GithubModule)
