@@ -37,6 +37,8 @@ class Application:
 
         self.driver = self.__init_driver__()
 
+        self.closed = False
+
     def is_e2e_enabled(self):
         return self.e2e_enabled
 
@@ -57,6 +59,7 @@ class Application:
             self.driver.quit()
             logging.info("Driver closed")
 
+        self.e2e_enabled = False
         self.closed = True
 
         logging.info("Application closed")
