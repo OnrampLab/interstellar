@@ -3,6 +3,7 @@ import os
 from typing import Type
 
 from injector import Injector
+from pytest import FixtureRequest
 from selenium.webdriver import ChromeOptions, Remote
 from selenium.webdriver.remote.webdriver import WebDriver
 
@@ -12,6 +13,7 @@ from .module import Module
 class Application:
     container: Injector
     testrun_uid: str
+    request: FixtureRequest
     driver: WebDriver
     options: any
     e2e_enabled: bool = False
@@ -20,6 +22,7 @@ class Application:
     def __init__(self, request, testrun_uid, options=None):
         logging.info("Creating application")
 
+        self.request = request
         self.testrun_uid = testrun_uid
         self.container = Injector()
         self.options = options
