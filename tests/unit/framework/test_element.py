@@ -189,3 +189,5 @@ class TestElement(BaseUITest, unittest.TestCase):
         self.app.driver.execute_script.assert_called_once_with(
             "arguments[0].scrollIntoView(false);", self.page.dom_element
         )
+
+        self.app.init_e2e()
