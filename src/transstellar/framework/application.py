@@ -78,11 +78,12 @@ class Application:
         selenium_cmd_executor = os.environ.get(
             "SELENIUM_CMD_EXECUTOR", "http://selenium:4444/wd/hub"
         )
+        implicitly_wait_time = self.options.get("implicitly_wait_time", 10)
         options = ChromeOptions()
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         driver = Remote(command_executor=selenium_cmd_executor, options=options)
-        driver.implicitly_wait(5)
+        driver.implicitly_wait(implicitly_wait_time)
         logging.info("Driver initialized")
 
         return driver
