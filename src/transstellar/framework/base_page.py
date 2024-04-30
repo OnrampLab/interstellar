@@ -8,9 +8,6 @@ class BasePage(Element):
     XPATH_CURRENT = "//body"
 
     def get_page(self, page_class):
-        if self.app:
-            return page_class(self.app)
-
         return page_class(self.app)
 
     def get_page_from_module(self, module, page_class):
