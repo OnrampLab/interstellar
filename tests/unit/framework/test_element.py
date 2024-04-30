@@ -35,6 +35,7 @@ class TestElement(BaseUITest, unittest.TestCase):
 
     @pytest.fixture(autouse=True)
     def setup_method_test(self):
+        self.app.driver.get("https://github.com")
         self.page = Page(self.app)
         # self.page.sleep(5)
 
@@ -63,7 +64,6 @@ class TestElement(BaseUITest, unittest.TestCase):
         )
 
     def test_get_current_dom_element(self):
-        self.app.driver.get("https://github.com")
 
         element = Header(self.app)
         dom_element = element.get_current_dom_element()
@@ -75,16 +75,12 @@ class TestElement(BaseUITest, unittest.TestCase):
         pass
 
     def test_get_current_html(self):
-        self.app.driver.get("https://github.com")
-
         element = Header(self.app)
         html = element.get_current_html()
 
         assert "<button" in html
 
     def test_refresh(self):
-        self.app.driver.get("https://github.com")
-
         element = HeaderIconLink(self.app)
         dom_element = element.get_current_dom_element()
         html = dom_element.get_attribute("innerHTML")
@@ -96,30 +92,22 @@ class TestElement(BaseUITest, unittest.TestCase):
         assert html == new_html
 
     def test_find_global_element(self):
-        self.app.driver.get("https://github.com")
-
         element = self.page.find_global_element(Header)
 
         assert isinstance(element, Header)
 
     def test_find_element(self):
-        self.app.driver.get("https://github.com")
-
         header = self.page.find_element(Header)
         icon = header.find_element(HeaderIconLink)
 
         assert isinstance(icon, HeaderIconLink)
 
     def test_find_elements(self):
-        self.app.driver.get("https://github.com")
-
         images = self.page.find_elements(Image)
 
         assert len(images) > 1
 
     def test_find_element_by_label(self):
-        self.app.driver.get("https://github.com")
-
         sign_up_button = self.page.find_element_by_label(Button, "Sign up for GitHub")
 
         assert isinstance(sign_up_button, Button)
@@ -129,22 +117,16 @@ class TestElement(BaseUITest, unittest.TestCase):
         pass
 
     def test_find_global_dom_element_by_xpath(self):
-        self.app.driver.get("https://github.com")
-
         dom_element = self.page.find_global_dom_element_by_xpath(Header.XPATH_CURRENT)
 
         assert isinstance(dom_element, WebElement)
 
     def test_find_dom_elements_by_tag_name(self):
-        self.app.driver.get("https://github.com")
-
         dom_elements = self.page.find_dom_elements_by_tag_name("header")
 
         assert isinstance(dom_elements[0], WebElement)
 
     def test_find_dom_element_by_xpath(self):
-        self.app.driver.get("https://github.com")
-
         dom_element = self.page.find_dom_element_by_xpath(Header.XPATH_CURRENT)
 
         assert isinstance(dom_element, WebElement)
@@ -154,8 +136,6 @@ class TestElement(BaseUITest, unittest.TestCase):
         pass
 
     def test_wait_for_dom_element_to_click_by_xpath(self):
-        self.app.driver.get("https://github.com")
-
         dom_element = self.page.wait_for_dom_element_to_click_by_xpath(
             Header.XPATH_CURRENT
         )
@@ -163,14 +143,11 @@ class TestElement(BaseUITest, unittest.TestCase):
         assert isinstance(dom_element, WebElement)
 
     def test_wait_for_dom_element_by_selector(self):
-        self.app.driver.get("https://github.com")
         dom_element = self.page.wait_for_dom_element_by_selector(".header-logged-out")
 
         assert isinstance(dom_element, WebElement)
 
     def test_sleep(self):
-        self.app.driver.get("https://github.com")
-
         start_time = time()
 
         self.page.sleep(2)

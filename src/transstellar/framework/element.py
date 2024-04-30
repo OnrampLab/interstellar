@@ -26,7 +26,7 @@ class Element(Loggable):
     app: Application
     injector: Injector
     driver: WebDriver
-    dom_element: any = None
+    dom_element: WebElement = None
 
     def __init__(self, app=None) -> None:
         super().__init__()
@@ -36,6 +36,7 @@ class Element(Loggable):
         self.init()
 
     def init(self):
+        self.get_current_dom_element()
         # should wait until the element shows
         pass
 
