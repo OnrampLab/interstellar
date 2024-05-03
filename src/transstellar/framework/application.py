@@ -25,7 +25,11 @@ class Application:
         self.request = request
         self.testrun_uid = testrun_uid
         self.container = Injector()
-        self.options = options
+
+        if options:
+            self.options = options
+        else:
+            self.options = {}
 
         self.__configure_log__(request.config)
 
