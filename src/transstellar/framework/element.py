@@ -7,7 +7,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
-from .application import Application
 from .loggable import Loggable
 from .utils import (
     wait_for_element_by_selector,
@@ -23,12 +22,12 @@ class Element(Loggable):
     XPATH_CURRENT = None
 
     label = ""
-    app: Application
+    app = None
     injector: Injector
     driver: WebDriver
     dom_element: WebElement = None
 
-    def __init__(self, app=None) -> None:
+    def __init__(self, app) -> None:
         super().__init__()
         self.app = app
         self.injector = app.container
@@ -38,7 +37,6 @@ class Element(Loggable):
     def init(self):
         self.get_current_dom_element()
         # should wait until the element shows
-        pass
 
     def init_after_dom_element_is_set(self):
         pass
