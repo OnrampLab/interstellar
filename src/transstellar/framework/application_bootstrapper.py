@@ -1,11 +1,9 @@
-from transstellar.framework import Application
+from .application import Application
 
 
 class ApplicationBootstrapper:
-    def create_app(self, request, testrun_uid, options=None):
-        if options is None:
-            options = {}
-        application = Application(request, testrun_uid, options)
+    def create_app(self, params: dict):
+        application = Application(params)
         self.bootstrap(application)
 
         return application

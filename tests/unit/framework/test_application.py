@@ -9,7 +9,11 @@ class TestApplication:
 
     @pytest.fixture(autouse=True)
     def setup_method_test(self, request, testrun_uid):
-        self.app = Application(request, testrun_uid)
+        params = {
+            "request": request,
+            "testrun_uid": testrun_uid,
+        }
+        self.app = Application(params)
 
     def teardown_method(self):
         self.app.close()

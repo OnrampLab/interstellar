@@ -17,7 +17,12 @@ def pytest_sessionfinish(session, exitstatus):
 
 @pytest.fixture(scope="module")
 def app(request, testrun_uid):
-    application = ApplicationBootstrapper().create_app(request, testrun_uid)
+    params = {
+        "request": request,
+        "testrun_uid": testrun_uid,
+    }
+
+    application = ApplicationBootstrapper().create_app(params)
 
     yield application
 

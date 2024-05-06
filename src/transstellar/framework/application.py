@@ -19,11 +19,13 @@ class Application:
     e2e_enabled: bool = False
     closed: bool = False
 
-    def __init__(self, request, testrun_uid, options=None):
+    def __init__(self, params: dict):
         logging.info("Creating application")
 
-        self.request = request
-        self.testrun_uid = testrun_uid
+        options = params.get("options")
+        self.request = params.get("request")
+        self.driver = params.get("driver")
+        self.testrun_uid = params.get("testrun_uid")
         self.container = Injector()
 
         if options:
@@ -31,7 +33,7 @@ class Application:
         else:
             self.options = {}
 
-        self.__configure_log__(request.config)
+        self.__configure_log__()
 
     def init_e2e(self):
         if self.e2e_enabled:
@@ -68,16 +70,16 @@ class Application:
 
         logging.info("Application closed")
 
-    def __configure_log__(self, config):
+    def __configure_log__(self):
         worker_id = os.environ.get("PYTEST_XDIST_WORKER")
         if worker_id is not None:
             with open(file=f"logs/pytest_{worker_id}.log", mode="w", encoding="utf-8"):
                 pass
 
             logging.basicConfig(
-                format=config.getini("log_file_format"),
+                format=self.request.getini("log_file_format"),
                 filename=f"logs/pytest_{worker_id}.log",
-                level=config.getini("log_file_level"),
+                level=self.request.getini("log_file_level"),
             )
 
     def __init_driver__(self) -> WebDriver:
