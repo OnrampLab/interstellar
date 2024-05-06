@@ -1,6 +1,7 @@
 import pytest
 
 from transstellar.framework.application import Application
+from transstellar.framework.base_page import BasePage
 from transstellar.framework.module import Module
 
 
@@ -12,6 +13,7 @@ class TestApplication:
         params = {
             "request": request,
             "testrun_uid": testrun_uid,
+            "routes": {"dashboard": BasePage},
         }
         self.app = Application(params)
 
@@ -38,6 +40,23 @@ class TestApplication:
         self.app.register_module(SimpleModule)
 
         assert self.app.get(SimpleModule).name == "SimpleModule"
+
+    def test_register_routes(self):
+        self.app.init_e2e()
+        self.app.register_routes(
+            {
+                "home": BasePage,
+            }
+        )
+
+        assert self.app.router.get_page(self.app, "home") is not None
+
+    def test_go_to(self):
+        self.app.init_e2e()
+
+        dashboard_page = self.app.go_to("dashboard")
+
+        assert dashboard_page is not None
 
 
 class SimpleModule(Module):

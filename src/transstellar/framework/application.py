@@ -8,6 +8,7 @@ from selenium.webdriver import ChromeOptions, Remote
 from selenium.webdriver.remote.webdriver import WebDriver
 
 from .module import Module
+from .router import Router
 
 
 class Application:
@@ -27,6 +28,9 @@ class Application:
         self.driver = params.get("driver")
         self.testrun_uid = params.get("testrun_uid")
         self.container = Injector()
+        self.router = Router()
+
+        routes = params.get("routes")
 
         if options:
             self.options = options
@@ -34,6 +38,7 @@ class Application:
             self.options = {}
 
         self.__configure_log__()
+        self.register_routes(routes)
 
     def init_e2e(self):
         if self.e2e_enabled:
@@ -54,6 +59,15 @@ class Application:
     def register_module(self, module_class: Type[Module]):
         module = module_class(self)
         self.container.binder.bind(module_class, module)
+
+    def register_routes(self, routes: dict):
+        self.router.register_routes(routes)
+
+    def go_to(self, key: str):
+        if not self.e2e_enabled:
+            return
+
+        return self.router.get_page(self, key)
 
     def close(self):
         if self.closed:
