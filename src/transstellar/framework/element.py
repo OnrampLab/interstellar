@@ -35,8 +35,7 @@ class Element(Loggable):
         self.init()
 
     def init(self):
-        self.get_current_dom_element()
-        # should wait until the element shows
+        pass
 
     def init_after_dom_element_is_set(self):
         pass
@@ -74,9 +73,9 @@ class Element(Loggable):
     def find_element(self, target_element_class: Type[T]) -> T:
         self.logger.debug(f"find element: {target_element_class.__name__}")
 
-        current_element = self.get_current_dom_element()
+        current_dom_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
-        element = current_element.find_element(By.XPATH, f".{target_element_xpath}")
+        element = current_dom_element.find_element(By.XPATH, f".{target_element_xpath}")
 
         # refactor
 
@@ -88,9 +87,11 @@ class Element(Loggable):
     def find_elements(self, target_element_class):
         self.logger.debug(f"find elements: {target_element_class.__name__}")
 
-        current_element = self.get_current_dom_element()
+        current_dom_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
-        elements = current_element.find_elements(By.XPATH, f".{target_element_xpath}")
+        elements = current_dom_element.find_elements(
+            By.XPATH, f".{target_element_xpath}"
+        )
 
         if len(elements) > 0:
             return list(
@@ -109,9 +110,9 @@ class Element(Loggable):
             f"find element ({target_element_class.__name__}) by label: {label}"
         )
 
-        current_element = self.get_current_dom_element()
+        current_dom_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
-        element = current_element.find_element(
+        element = current_dom_element.find_element(
             By.XPATH, f'.{target_element_xpath}[contains(.//text(), "{label}")]'
         )
 
