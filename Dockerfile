@@ -23,7 +23,7 @@ WORKDIR /project
 
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
-COPY pyproject.toml /project/
+COPY pyproject.toml poetry.lock /project/
 
 # quicker install as runtime deps are already installed
 RUN poetry cache clear --all .
