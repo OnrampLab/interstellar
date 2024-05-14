@@ -91,9 +91,9 @@ class Application:
                 pass
 
             logging.basicConfig(
-                format=self.request.getini("log_file_format"),
+                format=self.request.config.getini("log_file_format"),
                 filename=f"logs/pytest_{worker_id}.log",
-                level=self.request.getini("log_file_level"),
+                level=self.request.config.getini("log_file_level"),
             )
 
     def __init_driver__(self) -> WebDriver:
