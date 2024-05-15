@@ -18,10 +18,19 @@ class TestRouter(BaseUITest):
         self.router.register_routes(
             {
                 "dashboard": BasePage,
+                "user_list": BasePage,
+            }
+        )
+
+        self.router.register_routes(
+            {
+                "project_list": BasePage,
             }
         )
 
         assert self.router.routes.get("dashboard") is not None
+        assert self.router.routes.get("user_list") is not None
+        assert self.router.routes.get("project_list") is not None
 
     def test_register_route(self):
         self.router.register_route("home", BasePage)
