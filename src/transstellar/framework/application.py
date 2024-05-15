@@ -67,7 +67,11 @@ class Application:
         if not self.e2e_enabled:
             return
 
-        return self.router.get_page(self, key)
+        page = self.router.get_page(self, key)
+
+        page.wait_for_ready()
+
+        return page
 
     def close(self):
         if self.closed:

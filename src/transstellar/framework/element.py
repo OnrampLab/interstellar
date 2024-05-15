@@ -49,6 +49,9 @@ class Element(Loggable):
 
         return cls.XPATH_CURRENT
 
+    def wait_for_ready(self):
+        pass
+
     def find_global_element(self, target_element_class: Type[T]) -> T:
         self.logger.debug(f"finding global element for {target_element_class.__name__}")
 
