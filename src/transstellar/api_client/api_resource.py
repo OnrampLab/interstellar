@@ -1,29 +1,37 @@
+import logging
+
 from .api_client import APIClient
 
 
 class APIResource:
-    def __init__(self, base_endpoint: str, api_client: APIClient):
-        self.base_endpoint = base_endpoint
+    EMPTY_PATH_PARAMS = {}
+
+    def __init__(self, base_endpoint_template: str, api_client: APIClient):
+        self.base_endpoint_template = base_endpoint_template
         self.api_client = api_client
 
-    def find(self, resource_id, base_endpoint=None, headers=None):
-        if base_endpoint is None:
-            endpoint = f"{self.base_endpoint}/{resource_id}"
-        else:
-            endpoint = f"{base_endpoint}/{resource_id}"
+    def find(self, path_params: dict, headers=None):
+        endpoint = self.__generate_endpoint(path_params)
 
         response = self.api_client.get(endpoint=endpoint, headers=headers)
 
         return response
 
-    def list(self, params, headers=None):
-        endpoint = self.base_endpoint
+    def list(self, path_params: dict, params: dict = None, headers=None):
+        endpoint = self.__generate_endpoint(path_params)
         response = self.api_client.get(endpoint, params=params, headers=headers)
 
         return response
 
-    def create(self, payload, headers=None, expected_successful_status_code=201):
-        endpoint = self.base_endpoint
+    def create(
+        self,
+        path_params: dict = None,
+        payload=None,
+        headers=None,
+        expected_successful_status_code=201,
+    ):
+        endpoint = self.__generate_endpoint(path_params)
+
         response = self.api_client.post(
             endpoint, payload, headers, expected_successful_status_code
         )
@@ -32,16 +40,12 @@ class APIResource:
 
     def update(
         self,
-        resource_id,
+        path_params: dict,
         payload,
-        base_endpoint=None,
         headers=None,
         expected_successful_status_code=200,
     ):
-        if base_endpoint is None:
-            endpoint = f"{self.base_endpoint}/{resource_id}"
-        else:
-            endpoint = f"{base_endpoint}/{resource_id}"
+        endpoint = self.__generate_endpoint(path_params)
 
         response = self.api_client.patch(
             endpoint, payload, headers, expected_successful_status_code
@@ -51,19 +55,12 @@ class APIResource:
 
     def full_update(
         self,
-        resource_id,
+        path_params: dict,
         payload,
-        base_endpoint=None,
         headers=None,
         expected_successful_status_code=200,
     ):
-        if base_endpoint is None:
-            endpoint = f"{self.base_endpoint}/{resource_id}"
-        else:
-            if resource_id is None and base_endpoint is not None:
-                endpoint = base_endpoint
-            else:
-                endpoint = f"{base_endpoint}/{resource_id}"
+        endpoint = self.__generate_endpoint(path_params)
 
         response = self.api_client.put(
             endpoint, payload, headers, expected_successful_status_code
@@ -71,11 +68,26 @@ class APIResource:
 
         return response
 
-    def delete(self, resource_id, base_endpoint=None, headers=None):
+    def delete(self, path_params: dict, headers=None):
 
-        if base_endpoint is None:
-            endpoint = f"{self.base_endpoint}/{resource_id}"
-        else:
-            endpoint = f"{base_endpoint}/{resource_id}"
+        endpoint = self.__generate_endpoint(path_params)
 
         self.api_client.delete(endpoint, headers)
+
+    def __generate_endpoint(self, path_params):
+        url_parts = []
+
+        parts = self.base_endpoint_template.split("/")
+
+        for part in parts:
+            if part.startswith("{") and part.endswith("}"):
+                param_name = part[1:-1]
+
+                if param_name in path_params:
+                    url_parts.append(str(path_params[param_name]))
+            else:
+                url_parts.append(part)
+
+        url = "/".join(url_parts)
+
+        return url
