@@ -174,20 +174,20 @@ class Element(Loggable):
 
         return dom_element.find_element(By.XPATH, f".{xpath}")
 
-    def wait_for_dom_element_to_disappear_by_xpath(self, xpath: str):
+    def wait_for_dom_element_to_disappear_by_xpath(self, xpath: str, timeout: int = 10):
         self.logger.debug(f"wait for dom element to disappear by xpath: {xpath}")
 
-        return wait_for_element_to_disappear_by_xpath(self.driver, f".{xpath}")
+        return wait_for_element_to_disappear_by_xpath(self.driver, f".{xpath}", timeout)
 
-    def wait_for_dom_element_to_click_by_xpath(self, xpath: str):
+    def wait_for_dom_element_to_click_by_xpath(self, xpath: str, timeout: int = 10):
         self.logger.debug(f"wait for dom element to click by xpath: {xpath}")
 
-        return wait_for_element_to_click_by_xpath(self.driver, f".{xpath}")
+        return wait_for_element_to_click_by_xpath(self.driver, f".{xpath}", timeout)
 
-    def wait_for_dom_element_by_selector(self, css_selector):
+    def wait_for_dom_element_by_selector(self, css_selector, timeout: int = 10):
         self.logger.debug(f"wait for dom element by CSS selector: {css_selector}")
 
-        return wait_for_element_by_selector(self.driver, css_selector)
+        return wait_for_element_by_selector(self.driver, css_selector, timeout)
 
     def screenshot(self, file_name):
         screenshots_dir = os.path.join(os.getcwd(), "screenshots")

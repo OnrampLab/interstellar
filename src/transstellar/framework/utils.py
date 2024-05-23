@@ -31,8 +31,10 @@ def wait_for_element_by_selector(driver, css_selector: str, timeout=10) -> WebEl
     )
 
 
-def wait_for_element_to_disappear_by_xpath(driver, xpath: str) -> WebElement:
-    return WebDriverWait(driver, 10).until(
+def wait_for_element_to_disappear_by_xpath(
+    driver, xpath: str, timeout=10
+) -> WebElement:
+    return WebDriverWait(driver, timeout).until(
         EC.invisibility_of_element_located((By.XPATH, xpath))
     )
 
