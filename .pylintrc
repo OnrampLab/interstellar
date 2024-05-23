@@ -2,3 +2,7 @@
 disable=
     C0111, # missing-docstring
     R0903, # too-few-public-methods
+
+[MESSAGES CONTROL]
+disable=
+    W0201, # attribute-defined-outside-init
