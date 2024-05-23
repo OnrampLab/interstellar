@@ -28,6 +28,8 @@ class APIClient:
             http.client.HTTPConnection.debuglevel = 1
 
     def __get_headers(self, headers):
+        if headers is None:
+            headers = {}
         return {**self.headers, **headers, "Authorization": f"Bearer {self.token}"}
 
     def __handle_response(
@@ -63,15 +65,55 @@ class APIClient:
             error_message = responseJson.get("message", "Internal Server Error")
             raise ServerError(f"Server error: HTTP {status_code}. {error_message}")
 
-    def __get(self, url, params, headers={}):
+    def get(self, endpoint, params=None, headers=None):
+
+        url = f"{self.base_url}/{endpoint}"
+
+        return self.__get(url, params, headers)
+
+    def post(
+        self, endpoint, payload, headers=None, expected_successful_status_code=201
+    ):
+        url = f"{self.base_url}/{endpoint}"
+        return self.__post(url, payload, headers, expected_successful_status_code)
+
+    def patch(
+        self, endpoint, payload, headers=None, expected_successful_status_code=200
+    ):
+        url = f"{self.base_url}/{endpoint}"
+        return self.__patch(url, payload, headers, expected_successful_status_code)
+
+    def put(self, endpoint, payload, headers=None, expected_successful_status_code=200):
+        url = f"{self.base_url}/{endpoint}"
+        return self.__put(url, payload, headers, expected_successful_status_code)
+
+    def delete(self, endpoint, headers=None):
+        url = f"{self.base_url}/{endpoint}"
+
+        return self.__delete(url, headers)
+
+    def __get(self, url, params, headers):
         headers = self.__get_headers(headers)
+
         response = requests.get(url, params=params, headers=headers)
 
         return self.__handle_response(response)
 
-    def __post(self, url, payload, headers={}, expected_successful_status_code=200):
+    def __post(self, url, payload, headers={}, expected_successful_status_code=201):
         headers = self.__get_headers(headers)
         response = requests.post(url, json=payload, headers=headers)
+
+        return self.__handle_response(response, expected_successful_status_code)
+
+    def __patch(self, url, payload, headers={}, expected_successful_status_code=200):
+        headers = self.__get_headers(headers)
+        response = requests.patch(url, json=payload, headers=headers)
+
+        return self.__handle_response(response, expected_successful_status_code)
+
+    def __put(self, url, payload, headers={}, expected_successful_status_code=200):
+        headers = self.__get_headers(headers)
+        response = requests.put(url, json=payload, headers=headers)
 
         return self.__handle_response(response, expected_successful_status_code)
 
