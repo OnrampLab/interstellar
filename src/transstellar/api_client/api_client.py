@@ -27,43 +27,10 @@ class APIClient:
             # enable debugging
             http.client.HTTPConnection.debuglevel = 1
 
-    def __get_headers(self, headers):
-        if headers is None:
-            headers = {}
-        return {**self.headers, **headers, "Authorization": f"Bearer {self.token}"}
+    def as_token(self, token):
+        self.token = token
 
-    def __handle_response(
-        self, response: requests.models.Response, expected_successful_status_code=200
-    ):
-        status_code = response.status_code
-        responseJson = None
-
-        if response.text:
-            responseJson = json.loads(response.text)
-
-        if status_code >= 200 and status_code < 300:
-            if status_code != expected_successful_status_code:
-                raise Exception(
-                    f"Response status code ({status_code}) is not as expected: {expected_successful_status_code}"
-                )
-            return responseJson
-
-        if status_code >= 400 and status_code < 500:
-            error_message = responseJson.get("message", "Unknown client error")
-
-            if status_code == 400:
-                raise ClientError(f"Client error: {error_message}")
-
-            elif status_code == 401:
-                raise UnauthorizedError("Unauthorized: Check your credentials")
-
-            else:
-                error_message = responseJson.get("message", "Unknown client error")
-                raise ClientError(f"Client error: HTTP {status_code}. {error_message}")
-
-        if status_code >= 500:
-            error_message = responseJson.get("message", "Internal Server Error")
-            raise ServerError(f"Server error: HTTP {status_code}. {error_message}")
+        return self
 
     def get(self, endpoint, params=None, headers=None):
 
@@ -123,7 +90,40 @@ class APIClient:
 
         return self.__handle_response(response, expected_successful_status_code=204)
 
-    def as_token(self, token):
-        self.token = token
+    def __get_headers(self, headers):
+        if headers is None:
+            headers = {}
+        return {**self.headers, **headers, "Authorization": f"Bearer {self.token}"}
 
-        return self
+    def __handle_response(
+        self, response: requests.models.Response, expected_successful_status_code=200
+    ):
+        status_code = response.status_code
+        response_json = None
+
+        if response.text:
+            response_json = json.loads(response.text)
+
+        if status_code >= 200 and status_code < 300:
+            if status_code != expected_successful_status_code:
+                raise Exception(
+                    f"Response status code ({status_code}) is not as expected: {expected_successful_status_code}"
+                )
+            return response_json
+
+        if status_code >= 400 and status_code < 500:
+            error_message = response_json.get("message", "Unknown client error")
+
+            if status_code == 400:
+                raise ClientError(f"Client error: {error_message}")
+
+            elif status_code == 401:
+                raise UnauthorizedError("Unauthorized: Check your credentials")
+
+            else:
+                error_message = response_json.get("message", "Unknown client error")
+                raise ClientError(f"Client error: HTTP {status_code}. {error_message}")
+
+        if status_code >= 500:
+            error_message = response_json.get("message", "Internal Server Error")
+            raise ServerError(f"Server error: HTTP {status_code}. {error_message}")
