@@ -106,7 +106,7 @@ class Element(Loggable):
                 )
             )
         else:
-            raise Exception("Could not find elements of {element_class.__name__}")
+            raise Exception(f"Could not find elements of {element_class.__name__}")
 
     def find_element_by_label(self, target_element_class: Type[T], label: str) -> T:
         self.logger.debug(
