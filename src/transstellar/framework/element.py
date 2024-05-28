@@ -149,7 +149,7 @@ class Element(Loggable):
         return self.dom_element
 
     def get_current_html(self):
-        html = self.get_current_dom_element().get_attribute("innerHTML")
+        html = self.get_current_dom_element().get_attribute("outerHTML")
 
         self.logger.debug(f"current HTML: {html}")
 
