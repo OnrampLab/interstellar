@@ -85,7 +85,9 @@ class Element(Loggable):
         if element:
             return self.__create_child_element(target_element_class, element)
         else:
-            raise Exception("Could not find element of {element_class.__name__}")
+            raise LookupError(
+                f"Could not find element of {target_element_class.__name__}"
+            )
 
     def find_elements(self, target_element_class):
         self.logger.debug(f"find elements: {target_element_class.__name__}")
@@ -106,7 +108,9 @@ class Element(Loggable):
                 )
             )
         else:
-            raise Exception(f"Could not find elements of {element_class.__name__}")
+            raise LookupError(
+                f"Could not find elements of {target_element_class.__name__}"
+            )
 
     def find_element_by_label(self, target_element_class: Type[T], label: str) -> T:
         self.logger.debug(
@@ -122,8 +126,8 @@ class Element(Loggable):
         if element:
             return self.__create_child_element(target_element_class, element, label)
         else:
-            raise Exception(
-                "Could not find element of {element_class.__name__} with label: {label}"
+            raise LookupError(
+                f"Could not find element of {target_element_class.__name__} with label: {label}"
             )
 
     def wait_for_global_element_to_disappear(self, target_element_class):
