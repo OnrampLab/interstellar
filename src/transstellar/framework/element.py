@@ -43,7 +43,7 @@ class Element(Loggable):
     @classmethod
     def get_current_element_xpath(cls):
         if not cls.XPATH_CURRENT:
-            raise Exception(
+            raise AssertionError(
                 f"{cls.__name__} should set XPATH_CURRENT in order to get element"
             )
 
@@ -61,7 +61,12 @@ class Element(Loggable):
         if element:
             return self.__create_child_element(target_element_class, element)
         else:
-            raise Exception("Could not find element of {element_class.__name__}")
+            raise LookupError(
+                f"Could not find element of {target_element_class.__name__}"
+            )
+
+    def click(self):
+        self.get_current_dom_element().click()
 
     def refresh(self):
         self.logger.debug("refresh current element")
