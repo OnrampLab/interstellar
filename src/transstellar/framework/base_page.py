@@ -1,10 +1,12 @@
 import sys
 from urllib.parse import ParseResult, urlparse
 
+from transstellar.framework.page_decorator_meta import PageDecoratorMeta
+
 from .element import Element
 
 
-class BasePage(Element):
+class BasePage(Element, metaclass=PageDecoratorMeta):
     XPATH_CURRENT = "//body"
 
     def go_to(self, url: str):
