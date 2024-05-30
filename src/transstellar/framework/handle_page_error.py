@@ -3,7 +3,11 @@ import inspect
 
 def handle_page_error(cls):
     for name, method in vars(cls).items():
-        if inspect.ismethod(method) and not name.startswith("__"):
+        if (
+            callable(method)
+            and not inspect.isclass(method)
+            and not name.startswith("__")
+        ):
             setattr(
                 cls,
                 name,
