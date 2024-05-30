@@ -1,6 +1,9 @@
+import inspect
+
+
 def handle_page_error(cls):
     for name, method in vars(cls).items():
-        if callable(method) and not name.startswith("__"):
+        if inspect.ismethod(method) and not name.startswith("__"):
             setattr(
                 cls,
                 name,
