@@ -19,6 +19,7 @@ class Application:
     options: any
     e2e_enabled: bool = False
     closed: bool = False
+    logged_in: bool = False
 
     def __init__(self, params: dict):
         logging.info("Creating application")
@@ -87,6 +88,15 @@ class Application:
         self.closed = True
 
         logging.info("Application closed")
+
+    def set_logged_in(self):
+        if not self.is_e2e_enabled():
+            raise RuntimeError("Only E2E test supports setting logged_in")
+
+        self.logged_in = True
+
+    def is_logged_in(self):
+        return self.logged_in
 
     def __configure_log__(self):
         worker_id = os.environ.get("PYTEST_XDIST_WORKER")

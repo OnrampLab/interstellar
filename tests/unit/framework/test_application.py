@@ -58,6 +58,12 @@ class TestApplication:
 
         assert dashboard_page is not None
 
+    def test_is_logged_in(self):
+        self.app.init_e2e()
+        self.app.set_logged_in()
+
+        assert self.app.is_logged_in()
+
 
 class SimpleModule(Module):
     name: str
