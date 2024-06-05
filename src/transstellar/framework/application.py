@@ -29,7 +29,7 @@ class Application:
         self.driver = params.get("driver")
         self.testrun_uid = params.get("testrun_uid")
         self.container = Injector()
-        self.router = Router()
+        self.router = Router(self)
 
         routes = params.get("routes")
 

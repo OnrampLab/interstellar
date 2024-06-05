@@ -2,7 +2,11 @@ from .route import Route
 
 
 class Router:
+    app: None
     routes: dict = {}
+
+    def __init__(self, app):
+        self.app = app
 
     def register_routes(self, routes: dict):
         if routes is None:
@@ -20,10 +24,10 @@ class Router:
     def get_route(self, route_key: str):
         return self.routes.get(route_key)
 
-    def get_page(self, app, route_key: str):
+    def get_page(self, route_key: str):
         route = self.get_route(route_key)
 
         if route is None:
             return None
 
-        return route.page_class(app)
+        return route.get_page(self.app)

@@ -50,7 +50,7 @@ class TestApplication:
             }
         )
 
-        assert self.app.router.get_page(self.app, "home") is not None
+        assert self.app.router.get_page("home") is not None
 
     def test_go_to(self):
         self.app.init_e2e()

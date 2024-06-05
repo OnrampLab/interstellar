@@ -9,7 +9,7 @@ class TestRouter(BaseUITest):
 
     @pytest.fixture(autouse=True)
     def setup_method_test(self):
-        self.router = Router()
+        self.router = Router(self.app)
 
     def test_constructor(self):
         assert self.router is not None
@@ -35,18 +35,18 @@ class TestRouter(BaseUITest):
 
     def test_register_route(self):
         self.router.register_route("home", Route("/", BasePage))
-        page = self.router.get_page(self.app, "home")
+        page = self.router.get_page("home")
 
         assert isinstance(page, BasePage)
 
     def test_get_page_will_be_empty_when_route_is_not_found(self):
-        page = self.router.get_page(self.app, "fake_page")
+        page = self.router.get_page("fake_page")
 
         assert page is None
 
     def test_get_page_will_get_page_when_route_is_found(self):
         self.router.register_route("fake_page", Route("/", BasePage))
 
-        page = self.router.get_page(self.app, "fake_page")
+        page = self.router.get_page("fake_page")
 
         assert isinstance(page, BasePage)
