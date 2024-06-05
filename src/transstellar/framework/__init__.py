@@ -14,6 +14,7 @@ __all__ = [
     "Logger",
     "MainConfig",
     "Module",
+    "Route",
     "Router",
 ]
 
@@ -32,4 +33,5 @@ from .loggable import Loggable
 from .logger import Logger
 from .main_config import MainConfig
 from .module import Module
+from .route import Route
 from .router import Router

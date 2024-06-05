@@ -3,6 +3,7 @@ import pytest
 from transstellar.framework.application import Application
 from transstellar.framework.base_page import BasePage
 from transstellar.framework.module import Module
+from transstellar.framework.route import Route
 
 
 class TestApplication:
@@ -13,7 +14,7 @@ class TestApplication:
         params = {
             "request": request,
             "testrun_uid": testrun_uid,
-            "routes": {"dashboard": BasePage},
+            "routes": {"dashboard": Route("/dashboard", BasePage)},
         }
         self.app = Application(params)
 
@@ -45,7 +46,7 @@ class TestApplication:
         self.app.init_e2e()
         self.app.register_routes(
             {
-                "home": BasePage,
+                "home": Route("/", BasePage),
             }
         )
 

@@ -1,6 +1,7 @@
 import pytest
 
 from transstellar.framework import BasePage, BaseUITest, Router
+from transstellar.framework.route import Route
 
 
 class TestRouter(BaseUITest):
@@ -17,25 +18,26 @@ class TestRouter(BaseUITest):
     def test_register_routes(self):
         self.router.register_routes(
             {
-                "dashboard": BasePage,
-                "user_list": BasePage,
+                "dashboard": Route("/dashboard", BasePage),
+                "user_list": Route("/users", BasePage),
             }
         )
 
         self.router.register_routes(
             {
-                "project_list": BasePage,
+                "project_list": Route("/projects", BasePage),
             }
         )
 
-        assert self.router.routes.get("dashboard") is not None
-        assert self.router.routes.get("user_list") is not None
-        assert self.router.routes.get("project_list") is not None
+        assert self.router.get_route("dashboard") is not None
+        assert self.router.get_route("user_list") is not None
+        assert self.router.get_route("project_list") is not None
 
     def test_register_route(self):
-        self.router.register_route("home", BasePage)
+        self.router.register_route("home", Route("/", BasePage))
+        page = self.router.get_page(self.app, "home")
 
-        assert self.router.routes.get("home") is not None
+        assert isinstance(page, BasePage)
 
     def test_get_page_will_be_empty_when_route_is_not_found(self):
         page = self.router.get_page(self.app, "fake_page")
@@ -43,7 +45,7 @@ class TestRouter(BaseUITest):
         assert page is None
 
     def test_get_page_will_get_page_when_route_is_found(self):
-        self.router.register_route("fake_page", BasePage)
+        self.router.register_route("fake_page", Route("/", BasePage))
 
         page = self.router.get_page(self.app, "fake_page")
 

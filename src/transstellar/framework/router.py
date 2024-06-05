@@ -1,4 +1,4 @@
-from .base_page import BasePage
+from .route import Route
 
 
 class Router:
@@ -8,16 +8,22 @@ class Router:
         if routes is None:
             return
 
-        for key, value in routes.items():
-            self.register_route(key, value)
+        for route_key, value in routes.items():
+            self.register_route(route_key, value)
 
-    def register_route(self, key: str, page_class: BasePage):
-        self.routes[key] = page_class
+    def register_route(self, route_key: str, route: Route):
+        if not isinstance(route, Route):
+            raise TypeError("route is not a Route instance")
 
-    def get_page(self, app, key: str):
-        page_class = self.routes.get(key)
+        self.routes[route_key] = route
 
-        if page_class is None:
+    def get_route(self, route_key: str):
+        return self.routes.get(route_key)
+
+    def get_page(self, app, route_key: str):
+        route = self.get_route(route_key)
+
+        if route is None:
             return None
 
-        return page_class(app)
+        return route.page_class(app)
