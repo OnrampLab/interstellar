@@ -7,6 +7,8 @@ from pytest import FixtureRequest
 from selenium.webdriver import ChromeOptions, Remote
 from selenium.webdriver.remote.webdriver import WebDriver
 
+from transstellar.framework.main_config import MainConfig
+
 from .module import Module
 from .router import Router
 
@@ -30,6 +32,7 @@ class Application:
         self.testrun_uid = params.get("testrun_uid")
         self.container = Injector()
         self.router = Router(self)
+        self.main_config = self.get(MainConfig)
 
         routes = params.get("routes")
 
@@ -64,12 +67,37 @@ class Application:
     def register_routes(self, routes: dict):
         self.router.register_routes(routes)
 
-    def go_to(self, key: str):
+    def get_page(self, route_key: str):
         if not self.e2e_enabled:
-            return
+            return None
 
-        page = self.router.get_page(self, key)
+        route = self.router.get_route(route_key)
 
+        page = route.get_page(self)
+        page.wait_for_ready()
+
+        return page
+
+    def build_page(self, page_class):
+        return page_class(self)
+
+    def go_to_url(self, url: str):
+        if url != self.driver.current_url:
+            self.driver.get(url)
+
+    def go_to(self, route_key: str):
+        if not self.e2e_enabled:
+            return None
+
+        route = self.router.get_route(route_key)
+
+        base_url = self.main_config.get_app_url()
+        path = route.path
+        url = f"{base_url}{path}"
+
+        self.go_to_url(url)
+
+        page = route.get_page(self)
         page.wait_for_ready()
 
         return page

@@ -57,6 +57,15 @@ class TestApplication:
 
         dashboard_page = self.app.go_to("dashboard")
 
+        path = dashboard_page.get_current_url().path
+
+        assert path == "/dashboard"
+
+    def test_get_page(self):
+        self.app.init_e2e()
+
+        dashboard_page = self.app.get_page("dashboard")
+
         assert dashboard_page is not None
 
     def test_is_logged_in(self):
