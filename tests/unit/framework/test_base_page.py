@@ -1,4 +1,4 @@
-from transstellar.framework import BasePage, BaseUITest
+from transstellar.framework import BasePage, BaseUITest, Route
 
 
 class TestBasePage(BaseUITest):
@@ -7,9 +7,14 @@ class TestBasePage(BaseUITest):
 
         assert page is not None
 
+    def test_land(self):
+        self.app.register_routes({"home": Route("/", FakePage)})
+        page = FakePage(self.app)
 
+        page.land()
 
+        assert self.app.get_current_url().path == "/"
 
 
 class FakePage(BasePage):
-    pass
+    route_key = "home"
