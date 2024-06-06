@@ -39,10 +39,11 @@ class TestRouter(BaseUITest):
 
         assert isinstance(page, BasePage)
 
-    def test_get_page_will_be_empty_when_route_is_not_found(self):
-        page = self.router.get_page("fake_page")
-
-        assert page is None
+    def test_get_page_will_fail_when_route_is_not_found(self):
+        try:
+            self.router.get_page("fake_page")
+        except LookupError:
+            assert True
 
     def test_get_page_will_get_page_when_route_is_found(self):
         self.router.register_route("fake_page", Route("/", BasePage))

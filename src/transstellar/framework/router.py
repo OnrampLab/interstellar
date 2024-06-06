@@ -22,12 +22,14 @@ class Router:
         self.routes[route_key] = route
 
     def get_route(self, route_key: str):
-        return self.routes.get(route_key)
+        route = self.routes.get(route_key)
+
+        if route is None:
+            raise LookupError(f'Route "{route_key}" not found')
+
+        return route
 
     def get_page(self, route_key: str):
         route = self.get_route(route_key)
-
-        if route is None:
-            return None
 
         return route.get_page(self.app)
