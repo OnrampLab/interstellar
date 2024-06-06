@@ -55,9 +55,9 @@ class TestApplication:
     def test_go_to(self):
         self.app.init_e2e()
 
-        dashboard_page = self.app.go_to("dashboard")
+        self.app.go_to("dashboard")
 
-        path = dashboard_page.get_current_url().path
+        path = self.app.get_current_url().path
 
         assert path == "/dashboard"
 

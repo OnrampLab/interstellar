@@ -1,14 +1,14 @@
 import logging
 import os
 from typing import Type
+from urllib.parse import ParseResult, urlparse, urlunparse
 
 from injector import Injector
 from pytest import FixtureRequest
 from selenium.webdriver import ChromeOptions, Remote
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from transstellar.framework.main_config import MainConfig
-
+from .main_config import MainConfig
 from .module import Module
 from .router import Router
 
@@ -83,6 +83,7 @@ class Application:
 
     def go_to_url(self, url: str):
         if url != self.driver.current_url:
+            logging.info("Go to url: %s", url)
             self.driver.get(url)
 
     def go_to(self, route_key: str):
@@ -125,6 +126,9 @@ class Application:
 
     def is_logged_in(self):
         return self.logged_in
+
+    def get_current_url(self) -> ParseResult:
+        return urlparse(self.driver.current_url)
 
     def __configure_log__(self):
         worker_id = os.environ.get("PYTEST_XDIST_WORKER")
