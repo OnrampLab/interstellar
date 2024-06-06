@@ -21,9 +21,6 @@ class BaseUITest(BaseTest):
         self.app.init_e2e()
         self.driver = self.app.driver
 
-    def get_page(self, page_class):
-        return page_class(self.app)
-
     def screenshot(self, file_name):
         screenshots_dir = os.path.join(os.getcwd(), "screenshots")
 
