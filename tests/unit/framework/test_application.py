@@ -14,7 +14,7 @@ class TestApplication:
         params = {
             "request": request,
             "testrun_uid": testrun_uid,
-            "routes": {"dashboard": Route("/dashboard", BasePage)},
+            "routes": [Route("/dashboard", "dashboard", BasePage)],
         }
         self.app = Application(params)
 
@@ -45,9 +45,9 @@ class TestApplication:
     def test_register_routes(self):
         self.app.init_e2e()
         self.app.register_routes(
-            {
-                "home": Route("/", BasePage),
-            }
+            [
+                Route("/", "home", BasePage),
+            ]
         )
 
         assert self.app.router.get_page("home") is not None

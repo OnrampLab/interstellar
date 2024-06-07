@@ -68,40 +68,24 @@ class Application:
         self.router.register_routes(routes)
 
     def get_page(self, route_key: str):
-        if not self.e2e_enabled:
-            return None
+        self.guard_e2e()
 
-        route = self.router.get_route(route_key)
-
-        page = route.get_page(self)
-        page.wait_for_ready()
-
-        return page
+        return self.router.get_page(route_key)
 
     def build_page(self, page_class):
-        return page_class(self)
+        return self.router.build_page(page_class)
 
     def go_to_url(self, url: str):
-        if url != self.driver.current_url:
-            logging.info("Go to url: %s", url)
-            self.driver.get(url)
+        self.router.go_to_url(url)
 
     def go_to(self, route_key: str):
+        self.guard_e2e()
+
+        return self.router.go_to(route_key)
+
+    def guard_e2e(self):
         if not self.e2e_enabled:
-            return None
-
-        route = self.router.get_route(route_key)
-
-        base_url = self.main_config.get_app_url()
-        path = route.path
-        url = f"{base_url}{path}"
-
-        self.go_to_url(url)
-
-        page = route.get_page(self)
-        page.wait_for_ready()
-
-        return page
+            raise AttributeError("e2e is not enabled")
 
     def close(self):
         if self.closed:

@@ -17,15 +17,15 @@ class TestRouter(BaseUITest):
 
     def test_register_routes(self):
         self.router.register_routes(
-            {
-                "dashboard": Route("/dashboard", BasePage),
-                "user_list": Route("/users", BasePage),
-            }
+            [
+                Route("/dashboard", "dashboard", BasePage),
+                Route("/users", "user_list", BasePage),
+            ]
         )
 
         self.router.register_routes(
             {
-                "project_list": Route("/projects", BasePage),
+                Route("/projects", "project_list", BasePage),
             }
         )
 
@@ -34,8 +34,16 @@ class TestRouter(BaseUITest):
         assert self.router.get_route("project_list") is not None
 
     def test_register_route(self):
-        self.router.register_route("home", Route("/", BasePage))
-        page = self.router.get_page("home")
+        self.router.register_route(Route("/projects", "project_list", BasePage))
+        page = self.router.get_page("project_list")
+
+        assert isinstance(page, BasePage)
+
+    def test_get_dynamic_route(self):
+        self.router.register_route(
+            Route("/projects/{project_id}", "project_list", BasePage)
+        )
+        page = self.router.go_to("project_list", {"project_id": 1})
 
         assert isinstance(page, BasePage)
 
@@ -44,10 +52,3 @@ class TestRouter(BaseUITest):
             self.router.get_page("fake_page")
         except LookupError:
             assert True
-
-    def test_get_page_will_get_page_when_route_is_found(self):
-        self.router.register_route("fake_page", Route("/", BasePage))
-
-        page = self.router.get_page("fake_page")
-
-        assert isinstance(page, BasePage)
