@@ -14,7 +14,10 @@ class TestApplication:
         params = {
             "request": request,
             "testrun_uid": testrun_uid,
-            "routes": [Route("/dashboard", "dashboard", BasePage)],
+            "routes": [
+                Route("/dashboard", "dashboard", BasePage),
+                Route("/projects/{project_id}", "project_detail", BasePage),
+            ],
         }
         self.app = Application(params)
 
@@ -60,6 +63,15 @@ class TestApplication:
         path = self.app.get_current_url().path
 
         assert path == "/dashboard"
+
+    def test_go_to_with_path_params(self):
+        self.app.init_e2e()
+
+        self.app.go_to("project_detail", {"project_id": 1})
+
+        path = self.app.get_current_url().path
+
+        assert path == "/projects/1"
 
     def test_get_page(self):
         self.app.init_e2e()

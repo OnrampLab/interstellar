@@ -78,10 +78,10 @@ class Application:
     def go_to_url(self, url: str):
         self.router.go_to_url(url)
 
-    def go_to(self, route_key: str):
+    def go_to(self, route_key: str, path_params: dict = None):
         self.guard_e2e()
 
-        return self.router.go_to(route_key)
+        return self.router.go_to(route_key, path_params)
 
     def guard_e2e(self):
         if not self.e2e_enabled:
