@@ -6,6 +6,10 @@ from transstellar.framework.module import Module
 from transstellar.framework.route import Route
 
 
+class User:
+    pass
+
+
 class TestApplication:
     app: Application
 
@@ -82,9 +86,12 @@ class TestApplication:
 
     def test_is_logged_in(self):
         self.app.init_e2e()
-        self.app.set_logged_in()
+        user = User()
+
+        self.app.set_current_user(user)
 
         assert self.app.is_logged_in()
+        assert user == self.app.get_current_user()
 
 
 class SimpleModule(Module):

@@ -21,7 +21,7 @@ class Application:
     options: any
     e2e_enabled: bool = False
     closed: bool = False
-    logged_in: bool = False
+    current_user = None
 
     def __init__(self, params: dict):
         logging.info("Creating application")
@@ -102,14 +102,17 @@ class Application:
 
         logging.info("Application closed")
 
-    def set_logged_in(self):
+    def set_current_user(self, user):
         if not self.is_e2e_enabled():
-            raise RuntimeError("Only E2E test supports setting logged_in")
+            raise RuntimeError("Only E2E test supports setting current user")
 
-        self.logged_in = True
+        self.current_user = user
+
+    def get_current_user(self):
+        return self.current_user
 
     def is_logged_in(self):
-        return self.logged_in
+        return self.current_user is not None
 
     def get_current_url(self) -> ParseResult:
         return urlparse(self.driver.current_url)
