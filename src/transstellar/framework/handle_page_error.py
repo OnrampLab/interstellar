@@ -23,6 +23,11 @@ def handle_page_errors(method):
             result = method(*args, **kwargs)
             return result
         except Exception as e:
-            raise RuntimeError(f"Unable to do {method.__name__}") from e
+            message = f"Unable to do {method.__name__}"
+
+            if e.message != message:
+                raise RuntimeError(message) from e
+
+            raise e
 
     return wrapper
