@@ -1,4 +1,4 @@
-from transstellar.framework import BasePage, BaseUITest, Route
+from transstellar.framework import BasePage, BaseUITest
 
 
 class TestBasePage(BaseUITest):

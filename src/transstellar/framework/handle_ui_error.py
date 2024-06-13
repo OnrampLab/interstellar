@@ -1,22 +1,23 @@
+import inspect
+
+
 def handle_ui_error(screenshot_file_name=""):
     def decorator(cls):
-        class NewClass(cls):
-            pass
-
         for name, method in vars(cls).items():
             if (
                 callable(method)
+                and not inspect.isclass(method)
                 and not name.startswith("__")
                 # NOTE: can not support method with fixture decorator
                 and not hasattr(method, "_pytestfixturefunction")
             ):
                 setattr(
-                    NewClass,
+                    cls,
                     name,
                     handle_ui_errors(method, screenshot_file_name, cls.__name__),
                 )
 
-        return NewClass
+        return cls
 
     return decorator
 
