@@ -25,7 +25,7 @@ def handle_page_errors(method):
         except Exception as e:
             message = f"Unable to do {method.__name__}"
 
-            if e.message != message:
+            if str(e) != message:
                 raise RuntimeError(message) from e
 
             raise e
