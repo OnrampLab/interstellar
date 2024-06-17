@@ -3,6 +3,7 @@ import time
 from typing import Type, TypeVar
 
 from injector import Injector
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
@@ -83,7 +84,17 @@ class Element(Loggable):
 
         current_dom_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
-        element = current_dom_element.find_element(By.XPATH, f".{target_element_xpath}")
+
+        try:
+            element = current_dom_element.find_element(
+                By.XPATH, f".{target_element_xpath}"
+            )
+        except StaleElementReferenceException:
+            self.refresh()
+
+            element = current_dom_element.find_element(
+                By.XPATH, f".{target_element_xpath}"
+            )
 
         # refactor
 
@@ -99,9 +110,17 @@ class Element(Loggable):
 
         current_dom_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
-        elements = current_dom_element.find_elements(
-            By.XPATH, f".{target_element_xpath}"
-        )
+
+        try:
+            elements = current_dom_element.find_elements(
+                By.XPATH, f".{target_element_xpath}"
+            )
+        except StaleElementReferenceException:
+            self.refresh()
+
+            elements = current_dom_element.find_elements(
+                By.XPATH, f".{target_element_xpath}"
+            )
 
         if len(elements) > 0:
             return list(
