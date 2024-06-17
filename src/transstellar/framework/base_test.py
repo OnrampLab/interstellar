@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from .application import Application
@@ -12,3 +14,8 @@ class BaseTest:
     def setup_method_base_test(self, app: Application):
         self.app = app
         self.logger = Logger(self.__class__.__name__)
+
+    def sleep(self, seconds: float):
+        self.logger.debug(f"sleep: {seconds} seconds")
+
+        time.sleep(seconds)
