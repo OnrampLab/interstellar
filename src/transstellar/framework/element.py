@@ -82,24 +82,14 @@ class Element(Loggable):
     def find_element(self, target_element_class: Type[T]) -> T:
         self.logger.debug(f"find element: {target_element_class.__name__}")
 
-        current_dom_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
 
-        try:
-            element = current_dom_element.find_element(
-                By.XPATH, f".{target_element_xpath}"
-            )
-        except StaleElementReferenceException:
-            self.refresh()
-
-            element = current_dom_element.find_element(
-                By.XPATH, f".{target_element_xpath}"
-            )
+        dom_element = self.find_dom_element_by_xpath(target_element_xpath)
 
         # refactor
 
-        if element:
-            return self.__create_child_element(target_element_class, element)
+        if dom_element:
+            return self.__create_child_element(target_element_class, dom_element)
         else:
             raise LookupError(
                 f"Could not find element of {target_element_class.__name__}"
@@ -108,19 +98,9 @@ class Element(Loggable):
     def find_elements(self, target_element_class):
         self.logger.debug(f"find elements: {target_element_class.__name__}")
 
-        current_dom_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
 
-        try:
-            elements = current_dom_element.find_elements(
-                By.XPATH, f".{target_element_xpath}"
-            )
-        except StaleElementReferenceException:
-            self.refresh()
-
-            elements = current_dom_element.find_elements(
-                By.XPATH, f".{target_element_xpath}"
-            )
+        elements = self.find_dom_elements_by_xpath(target_element_xpath)
 
         if len(elements) > 0:
             return list(
@@ -198,9 +178,32 @@ class Element(Loggable):
     def find_dom_element_by_xpath(self, xpath: str):
         self.logger.debug(f"finding dom element by xpath: {xpath}")
 
-        dom_element = self.get_current_dom_element()
+        try:
+            dom_element = self.get_current_dom_element()
+            child_dom_element = dom_element.find_element(By.XPATH, f".{xpath}")
 
-        return dom_element.find_element(By.XPATH, f".{xpath}")
+        except StaleElementReferenceException:
+            self.refresh()
+
+            dom_element = self.get_current_dom_element()
+            child_dom_element = dom_element.find_element(By.XPATH, f".{xpath}")
+
+        return child_dom_element
+
+    def find_dom_elements_by_xpath(self, xpath: str):
+        self.logger.debug(f"finding dom element by xpath: {xpath}")
+
+        try:
+            dom_element = self.get_current_dom_element()
+            child_dom_elements = dom_element.find_elements(By.XPATH, f".{xpath}")
+
+        except StaleElementReferenceException:
+            self.refresh()
+
+            dom_element = self.get_current_dom_element()
+            child_dom_elements = dom_element.find_elements(By.XPATH, f".{xpath}")
+
+        return child_dom_elements
 
     def wait_for_dom_element_to_disappear_by_xpath(self, xpath: str, timeout: int = 10):
         self.logger.debug(f"wait for dom element to disappear by xpath: {xpath}")
