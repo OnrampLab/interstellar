@@ -1,3 +1,4 @@
+import datetime
 import os
 import time
 from typing import Type, TypeVar
@@ -79,28 +80,46 @@ class Element(Loggable):
 
         return self.get_current_dom_element()
 
-    def find_element(self, target_element_class: Type[T]) -> T:
+    def find_element(self, target_element_class: Type[T], timeout: int = 0) -> T:
         self.logger.debug(f"find element: {target_element_class.__name__}")
+
+        start_time = datetime.datetime.now()
 
         target_element_xpath = target_element_class.get_current_element_xpath()
 
-        dom_element = self.find_dom_element_by_xpath(target_element_xpath)
+        try:
+            dom_element = self.find_dom_element_by_xpath(target_element_xpath)
+        except Exception as e:
+            end_time = datetime.datetime.now()
+            time_difference = (end_time - start_time).total_seconds()
 
-        # refactor
+            if time_difference < timeout:
+                self.find_element(target_element_class, timeout - time_difference)
+
+            raise e
 
         if dom_element:
             return self.__create_child_element(target_element_class, dom_element)
-        else:
-            raise LookupError(
-                f"Could not find element of {target_element_class.__name__}"
-            )
 
-    def find_elements(self, target_element_class):
+        raise LookupError(f"Could not find element of {target_element_class.__name__}")
+
+    def find_elements(self, target_element_class, timeout: int = 0):
         self.logger.debug(f"find elements: {target_element_class.__name__}")
+
+        start_time = datetime.datetime.now()
 
         target_element_xpath = target_element_class.get_current_element_xpath()
 
-        elements = self.find_dom_elements_by_xpath(target_element_xpath)
+        try:
+            elements = self.find_dom_elements_by_xpath(target_element_xpath)
+        except Exception as e:
+            end_time = datetime.datetime.now()
+            time_difference = (end_time - start_time).total_seconds()
+
+            if time_difference < timeout:
+                self.find_element(target_element_class, timeout - time_difference)
+
+            raise e
 
         if len(elements) > 0:
             return list(

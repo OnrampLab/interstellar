@@ -101,8 +101,19 @@ class TestElement(BaseUITest, unittest.TestCase):
 
         assert isinstance(icon, HeaderIconLink)
 
+    def test_find_element_with_timeout(self):
+        header = self.page.find_element(Header, 5)
+        icon = header.find_element(HeaderIconLink)
+
+        assert isinstance(icon, HeaderIconLink)
+
     def test_find_elements(self):
         images = self.page.find_elements(Image)
+
+        assert len(images) > 1
+
+    def test_find_elements_with_timeout(self):
+        images = self.page.find_elements(Image, 5)
 
         assert len(images) > 1
 
