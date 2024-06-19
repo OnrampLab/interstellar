@@ -245,6 +245,9 @@ class Element(Loggable):
             "arguments[0].scrollIntoView(false);", self.dom_element
         )
 
+    def get_classes(self):
+        return self.get_current_dom_element().get_attribute("class")
+
     def __create_child_element(
         self, child_element_class: Type[T], child_dom_element, label: str = ""
     ) -> T:

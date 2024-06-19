@@ -37,7 +37,6 @@ class TestElement(BaseUITest, unittest.TestCase):
     def setup_method_test(self):
         self.app.driver.get("https://github.com")
         self.page = Page(self.app)
-        # self.page.sleep(5)
 
     def test_constructor(self):
         element = Header(self.app)
@@ -168,3 +167,8 @@ class TestElement(BaseUITest, unittest.TestCase):
         )
 
         self.app.init_e2e()
+
+    def test_get_classes(self):
+        classes = self.page.get_classes()
+
+        assert "home-campaign" in classes
