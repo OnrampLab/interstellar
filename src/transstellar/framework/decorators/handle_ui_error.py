@@ -34,7 +34,6 @@ def handle_ui_errors(method, screenshot_file_name, class_name):
                 file_name = screenshot_file_name
             test_instance = args[0]
             test_instance.screenshot(file_name)
-            test_instance.logger.info(f"{file_name} saved")
 
             raise e
 
