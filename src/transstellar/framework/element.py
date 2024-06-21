@@ -9,6 +9,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
+from transstellar.framework.decorators.with_timeout import with_timeout
+
 from .loggable import Loggable
 from .utils import (
     wait_for_element_by_selector,
@@ -54,24 +56,14 @@ class Element(Loggable):
     def wait_for_ready(self):
         pass
 
-    def find_global_element(self, target_element_class: Type[T], timeout: int = 0) -> T:
-        self.logger.debug(f"finding global element for {target_element_class.__name__}")
+    @with_timeout()
+    def find_global_element(self, target_element_class: Type[T], timeout=0) -> T:
+        self.logger.debug(
+            f"finding global element for {target_element_class.__name__} with timeout: {timeout}"
+        )
 
-        start_time = datetime.datetime.now()
         target_element_xpath = target_element_class.get_current_element_xpath()
-
-        try:
-            element = self.find_global_dom_element_by_xpath(target_element_xpath)
-        except Exception as e:
-            end_time = datetime.datetime.now()
-            time_difference = (end_time - start_time).total_seconds()
-
-            if time_difference < timeout:
-                self.find_global_element(
-                    target_element_class, timeout - time_difference
-                )
-
-            raise e
+        element = self.find_global_dom_element_by_xpath(target_element_xpath)
 
         if element:
             return self.__create_child_element(target_element_class, element)
@@ -93,46 +85,29 @@ class Element(Loggable):
 
         return self.get_current_dom_element()
 
-    def find_element(self, target_element_class: Type[T], timeout: int = 0) -> T:
-        self.logger.debug(f"find element: {target_element_class.__name__}")
-
-        start_time = datetime.datetime.now()
+    @with_timeout()
+    def find_element(self, target_element_class: Type[T], timeout=0) -> T:
+        self.logger.debug(
+            f"find element: {target_element_class.__name__} with timeout: {timeout}"
+        )
 
         target_element_xpath = target_element_class.get_current_element_xpath()
 
-        try:
-            dom_element = self.find_dom_element_by_xpath(target_element_xpath)
-        except Exception as e:
-            end_time = datetime.datetime.now()
-            time_difference = (end_time - start_time).total_seconds()
-
-            if time_difference < timeout:
-                self.find_element(target_element_class, timeout - time_difference)
-
-            raise e
+        dom_element = self.find_dom_element_by_xpath(target_element_xpath)
 
         if dom_element:
             return self.__create_child_element(target_element_class, dom_element)
 
         raise LookupError(f"Could not find element of {target_element_class.__name__}")
 
-    def find_elements(self, target_element_class, timeout: int = 0):
-        self.logger.debug(f"find elements: {target_element_class.__name__}")
-
-        start_time = datetime.datetime.now()
+    @with_timeout()
+    def find_elements(self, target_element_class, timeout=0):
+        self.logger.debug(
+            f"find elements: {target_element_class.__name__} with timeout: {timeout}"
+        )
 
         target_element_xpath = target_element_class.get_current_element_xpath()
-
-        try:
-            elements = self.find_dom_elements_by_xpath(target_element_xpath)
-        except Exception as e:
-            end_time = datetime.datetime.now()
-            time_difference = (end_time - start_time).total_seconds()
-
-            if time_difference < timeout:
-                self.find_element(target_element_class, timeout - time_difference)
-
-            raise e
+        elements = self.find_dom_elements_by_xpath(target_element_xpath)
 
         if len(elements) > 0:
             return list(
@@ -148,9 +123,12 @@ class Element(Loggable):
                 f"Could not find elements of {target_element_class.__name__}"
             )
 
-    def find_element_by_label(self, target_element_class: Type[T], label: str) -> T:
+    @with_timeout()
+    def find_element_by_label(
+        self, target_element_class: Type[T], label: str, timeout=0
+    ) -> T:
         self.logger.debug(
-            f"find element ({target_element_class.__name__}) by label: {label}"
+            f"find element ({target_element_class.__name__}) by label: {label} with timeout: {timeout}"
         )
 
         current_dom_element = self.get_current_dom_element()
@@ -262,6 +240,8 @@ class Element(Loggable):
 
         self.driver.save_screenshot(screenshot_path)
 
+        self.logger.info(f"{file_name} saved")
+
     def sleep(self, seconds: float):
         self.logger.debug(f"sleep: {seconds} seconds")
 
@@ -278,7 +258,26 @@ class Element(Loggable):
         )
 
     def get_classes(self):
-        return self.get_current_dom_element().get_attribute("class")
+        return self.get_attribute("class")
+
+    def get_attribute(self, name: str):
+        return self.get_current_dom_element().get_attribute(name)
+
+    def highlight(self, color_code: str):
+        """
+        Testing purpose
+        """
+
+        dom_element = self.get_current_dom_element()
+        new_style = f"border: 2px solid {color_code};"
+        current_style = dom_element.get_attribute("style")
+        combined_style = current_style + new_style
+
+        self.driver.execute_script(
+            "arguments[0].setAttribute('style', arguments[1]);",
+            dom_element,
+            combined_style,
+        )
 
     def __create_child_element(
         self, child_element_class: Type[T], child_dom_element, label: str = ""
@@ -290,3 +289,16 @@ class Element(Loggable):
             child_element.label = label
 
         return child_element
+
+
+def highlight(self, color_code: str):
+    dom_element = self.get_current_dom_element()
+    new_style = f"border: 2px solid {color_code};"
+    current_style = dom_element.get_attribute("style")
+    combined_style = current_style + new_style
+
+    self.driver.execute_script(
+        "arguments[0].setAttribute('style', arguments[1]);",
+        dom_element,
+        combined_style,
+    )
