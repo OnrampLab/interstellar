@@ -54,11 +54,24 @@ class Element(Loggable):
     def wait_for_ready(self):
         pass
 
-    def find_global_element(self, target_element_class: Type[T]) -> T:
+    def find_global_element(self, target_element_class: Type[T], timeout: int = 0) -> T:
         self.logger.debug(f"finding global element for {target_element_class.__name__}")
 
+        start_time = datetime.datetime.now()
         target_element_xpath = target_element_class.get_current_element_xpath()
-        element = self.find_global_dom_element_by_xpath(target_element_xpath)
+
+        try:
+            element = self.find_global_dom_element_by_xpath(target_element_xpath)
+        except Exception as e:
+            end_time = datetime.datetime.now()
+            time_difference = (end_time - start_time).total_seconds()
+
+            if time_difference < timeout:
+                self.find_global_element(
+                    target_element_class, timeout - time_difference
+                )
+
+            raise e
 
         if element:
             return self.__create_child_element(target_element_class, element)
