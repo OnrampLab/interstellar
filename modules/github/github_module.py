@@ -6,8 +6,6 @@ class GithubModule(Module):
     github_config_parser: GithubConfigParser
 
     def bootstrap(self):
-        self.logger.info("Github Module!")
-
         self.github_config_parser = self.app.get(GithubConfigParser)
 
     def get_api_url(self):

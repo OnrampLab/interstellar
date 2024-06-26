@@ -1,10 +1,12 @@
-import datetime
 import os
 import time
 from typing import Type, TypeVar
 
 from injector import Injector
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
@@ -134,7 +136,7 @@ class Element(Loggable):
         current_dom_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
         element = current_dom_element.find_element(
-            By.XPATH, f'.{target_element_xpath}[contains(.//text(), "{label}")]'
+            By.XPATH, f'.{target_element_xpath}[contains(normalize-space(), "{label}")]'
         )
 
         if element:
@@ -143,6 +145,65 @@ class Element(Loggable):
             raise LookupError(
                 f"Could not find element of {target_element_class.__name__} with label: {label}"
             )
+
+    def find_next_element(
+        self, target_element_class: Type[T], original_element_class, timeout=0
+    ) -> T:
+        return self.__find_sibling_element(
+            target_element_class, original_element_class, True, timeout
+        )
+
+    def find_next_element_by_xpath(
+        self, target_element_class: Type[T], xpath, timeout=0
+    ) -> T:
+        return self.__find_sibling_element_by_xpath(
+            target_element_class, xpath, True, timeout
+        )
+
+    def find_preceding_element(
+        self, target_element_class: Type[T], original_element_class, timeout=0
+    ) -> T:
+        return self.__find_sibling_element(
+            target_element_class, original_element_class, False, timeout
+        )
+
+    def find_preceding_element_by_xpath(
+        self, target_element_class: Type[T], xpath, timeout=0
+    ) -> T:
+        return self.__find_sibling_element_by_xpath(
+            target_element_class, xpath, False, timeout
+        )
+
+    @with_timeout()
+    def find_element_by_id(
+        self, target_element_class: Type[T], dom_id: str, timeout=0
+    ) -> T:
+        self.logger.debug(
+            f"find element ({target_element_class.__name__}) by id: {dom_id} with timeout: {timeout}"
+        )
+
+        current_dom_element = self.get_current_dom_element()
+        target_element_xpath = target_element_class.get_current_element_xpath()
+        element = current_dom_element.find_element(
+            By.XPATH, f'.{target_element_xpath}[@id="{dom_id}"]'
+        )
+
+        if element:
+            return self.__create_child_element(target_element_class, element)
+        else:
+            raise LookupError(
+                f"Could not find element of {target_element_class.__name__} with id: {dom_id}"
+            )
+
+    def is_element_present(self, target_element_class: Type[T]) -> T:
+        try:
+            current_dom_element = self.get_current_dom_element()
+            target_element_xpath = target_element_class.get_current_element_xpath()
+            current_dom_element.find_element(By.XPATH, f".{target_element_xpath}")
+
+            return True
+        except NoSuchElementException:
+            return False
 
     def wait_for_global_element_to_disappear(self, target_element_class):
         self.logger.debug(
@@ -263,6 +324,9 @@ class Element(Loggable):
     def get_attribute(self, name: str):
         return self.get_current_dom_element().get_attribute(name)
 
+    def is_displayed(self) -> bool:
+        return self.get_current_dom_element().is_displayed()
+
     def highlight(self, color_code: str):
         """
         Testing purpose
@@ -290,15 +354,49 @@ class Element(Loggable):
 
         return child_element
 
+    @with_timeout()
+    def __find_sibling_element(
+        self,
+        target_element_class: Type[T],
+        original_element_class,
+        is_next: bool = True,
+        timeout=0,
+    ) -> T:
+        original_element_xpath = original_element_class.get_current_element_xpath()
 
-def highlight(self, color_code: str):
-    dom_element = self.get_current_dom_element()
-    new_style = f"border: 2px solid {color_code};"
-    current_style = dom_element.get_attribute("style")
-    combined_style = current_style + new_style
+        return self.__find_sibling_element_by_xpath(
+            target_element_class, original_element_xpath, is_next, timeout
+        )
 
-    self.driver.execute_script(
-        "arguments[0].setAttribute('style', arguments[1]);",
-        dom_element,
-        combined_style,
-    )
+    @with_timeout()
+    def __find_sibling_element_by_xpath(
+        self,
+        target_element_class: Type[T],
+        xpath: str,
+        is_next: bool = True,
+        timeout=0,
+    ) -> T:
+        method = "following-sibling" if is_next else "preceding-sibling"
+
+        self.logger.debug(
+            "find %s element (%s) of element xpath: %s with timeout: %d",
+            method,
+            target_element_class.__name__,
+            xpath,
+            timeout,
+        )
+
+        current_dom_element = self.get_current_dom_element()
+        target_element_xpath = target_element_class.get_current_element_xpath()[2:]
+
+        element = current_dom_element.find_element(
+            By.XPATH,
+            f".{xpath}/{method}::{target_element_xpath}",
+        )
+
+        if element:
+            return self.__create_child_element(target_element_class, element)
+        else:
+            raise LookupError(
+                f"Could not find {method} element {target_element_class.__name__} of xpath: {xpath}"
+            )

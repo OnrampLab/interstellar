@@ -17,6 +17,14 @@ class Header(Element):
     XPATH_CURRENT = "//header"
 
 
+class Div(Element):
+    XPATH_CURRENT = "//div"
+
+
+class NotExistDiv(Element):
+    XPATH_CURRENT = '//div[@id="not-exist"]'
+
+
 class Image(Element):
     XPATH_CURRENT = "//img"
 
@@ -121,6 +129,40 @@ class TestElement(BaseUITest, unittest.TestCase):
         sign_up_button = self.page.find_element_by_label(Button, "Sign up for GitHub")
 
         assert isinstance(sign_up_button, Button)
+
+    def test_find_next_element(self):
+        div = self.page.find_next_element(
+            Div,
+            Button,
+        )
+
+        assert isinstance(div, Div)
+
+    def test_find_next_element_by_xpath(self):
+        div = self.page.find_next_element_by_xpath(Div, "//button")
+
+        assert isinstance(div, Div)
+
+    def test_find_preceding_element(self):
+        div = self.page.find_preceding_element(
+            Div,
+            Button,
+        )
+
+        assert isinstance(div, Div)
+
+    def test_find_preceding_element_by_xpath(self):
+        div = self.page.find_preceding_element_by_xpath(Div, "//button")
+
+        assert isinstance(div, Div)
+
+    def test_find_element_by_id(self):
+        content = self.page.find_element_by_id(Div, "start-of-content")
+
+        assert isinstance(content, Div)
+
+    def test_is_element_present(self):
+        assert not self.page.is_element_present(NotExistDiv)
 
     def test_wait_for_global_element_to_disappear(self):
         # should think a way to test
