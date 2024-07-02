@@ -175,6 +175,40 @@ class Element(Loggable):
         )
 
     @with_timeout()
+    def get_next_element(self, target_element_class: Type[T], timeout=0) -> T:
+        self.logger.debug(
+            f"find next element of ({target_element_class.__name__}) with timeout: {timeout}"
+        )
+
+        dom_element = self.get_dom_element().find_element(
+            By.XPATH, "following-sibling::*[1]"
+        )
+
+        if dom_element:
+            return self.__create_child_element(target_element_class, dom_element)
+        else:
+            raise LookupError(
+                f"Could not find next element {target_element_class.__name__}"
+            )
+
+    @with_timeout()
+    def get_preceding_element(self, target_element_class: Type[T], timeout=0) -> T:
+        self.logger.debug(
+            f"find preceding element of ({target_element_class.__name__}) with timeout: {timeout}"
+        )
+
+        dom_element = self.get_dom_element().find_element(
+            By.XPATH, "preceding-sibling::*[1]"
+        )
+
+        if dom_element:
+            return self.__create_child_element(target_element_class, dom_element)
+        else:
+            raise LookupError(
+                f"Could not find preceding element {target_element_class.__name__}"
+            )
+
+    @with_timeout()
     def find_element_by_id(
         self, target_element_class: Type[T], dom_id: str, timeout=0
     ) -> T:
@@ -216,6 +250,9 @@ class Element(Loggable):
             self.driver, f".{target_element_xpath}"
         )
 
+    def get_dom_element(self) -> WebElement:
+        return self.get_current_dom_element()
+
     def get_current_dom_element(self) -> WebElement:
         if self.dom_element:
             return self.dom_element
@@ -227,12 +264,22 @@ class Element(Loggable):
 
         return self.dom_element
 
+    def get_html(self):
+        return self.get_current_html()
+
     def get_current_html(self):
         html = self.get_current_dom_element().get_attribute("outerHTML")
 
         self.logger.debug(f"current HTML: {html}")
 
         return html
+
+    def get_text(self):
+        text = self.get_dom_element().text
+
+        self.logger.debug(f"current text: {text}")
+
+        return text
 
     def find_global_dom_element_by_xpath(self, xpath: str):
         self.logger.debug(f"finding global dom element by xpath: {xpath}")

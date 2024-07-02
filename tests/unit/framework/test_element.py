@@ -141,6 +141,24 @@ class TestElement(BaseUITest, unittest.TestCase):
 
         assert isinstance(div, Div)
 
+    def test_get_next_element(self):
+        li = self.page.find_element_by_label(Li, "Solutions")
+
+        assert isinstance(li, Li)
+
+        next_li = li.get_next_element(Li)
+
+        assert next_li.get_text() == "Resources"
+
+    def test_get_preceding_element(self):
+        li = self.page.find_element_by_label(Li, "Solutions")
+
+        assert isinstance(li, Li)
+
+        preceding_li = li.get_preceding_element(Li)
+
+        assert preceding_li.get_text() == "Product"
+
     def test_find_element_by_id(self):
         content = self.page.find_element_by_id(Div, "start-of-content")
 
