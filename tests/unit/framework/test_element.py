@@ -7,30 +7,15 @@ import pytest
 from selenium.webdriver.remote.webelement import WebElement
 
 from transstellar.framework import BaseUITest, Element, handle_ui_error
+from transstellar.html import Body, Button, Div, Header, Image, Li
 
 
-class Page(Element):
-    XPATH_CURRENT = "//body"
-
-
-class Header(Element):
-    XPATH_CURRENT = "//header"
-
-
-class Div(Element):
-    XPATH_CURRENT = "//div"
+class Page(Body):
+    pass
 
 
 class NotExistDiv(Element):
     XPATH_CURRENT = '//div[@id="not-exist"]'
-
-
-class Image(Element):
-    XPATH_CURRENT = "//img"
-
-
-class Button(Element):
-    XPATH_CURRENT = "//button"
 
 
 class HeaderIconLink(Element):
