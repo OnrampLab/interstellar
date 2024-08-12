@@ -29,6 +29,7 @@ class TestElement(BaseUITest, unittest.TestCase):
     @pytest.fixture(autouse=True)
     def setup_method_test(self):
         self.app.driver.get("https://github.com")
+        self.app.driver.set_window_size(1024, 768)
         self.page = Page(self.app)
 
     def test_constructor(self):
