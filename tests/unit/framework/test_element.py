@@ -19,7 +19,7 @@ class NotExistDiv(Element):
 
 
 class HeaderIconLink(Element):
-    XPATH_CURRENT = '//a[@href="https://github.com/"]'
+    XPATH_CURRENT = '//a[@href="/"]'
 
 
 @handle_ui_error()

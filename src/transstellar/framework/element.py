@@ -48,6 +48,10 @@ class Element(Loggable):
 
     @classmethod
     def get_current_element_xpath(cls):
+        return cls.get_xpath()
+
+    @classmethod
+    def get_xpath(cls):
         if not cls.XPATH_CURRENT:
             raise AssertionError(
                 f"{cls.__name__} should set XPATH_CURRENT in order to get element"
@@ -299,12 +303,16 @@ class Element(Loggable):
         try:
             dom_element = self.get_current_dom_element()
             child_dom_element = dom_element.find_element(By.XPATH, f".{xpath}")
-
         except StaleElementReferenceException:
-            self.refresh()
-
             dom_element = self.get_current_dom_element()
-            child_dom_element = dom_element.find_element(By.XPATH, f".{xpath}")
+            current_xpath = self.get_xpath()
+
+            child_dom_element = self.driver.find_element(
+                By.XPATH, f"{current_xpath}{xpath}"
+            )
+        except NoSuchElementException:
+            self.logger.debug(f"current html: {self.get_html()}")
+            raise
 
         return child_dom_element
 
