@@ -111,6 +111,11 @@ class TestElement(BaseUITest, unittest.TestCase):
 
         assert len(images) > 1
 
+    def test_find_element_by_fuzzy_label(self):
+        sign_up_button = self.page.find_element_by_fuzzy_label(Button, "Sign up")
+
+        assert isinstance(sign_up_button, Button)
+
     def test_find_element_by_label(self):
         sign_up_button = self.page.find_element_by_label(Button, "Sign up for GitHub")
 

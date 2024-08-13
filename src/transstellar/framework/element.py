@@ -130,6 +130,28 @@ class Element(Loggable):
             )
 
     @with_timeout()
+    def find_element_by_fuzzy_label(
+        self, target_element_class: Type[T], label: str, timeout=0
+    ) -> T:
+        self.logger.debug(
+            f"find element ({target_element_class.__name__}) by label: {label} with timeout: {timeout}"
+        )
+
+        current_dom_element = self.get_current_dom_element()
+        target_element_xpath = target_element_class.get_current_element_xpath()
+        element = current_dom_element.find_element(
+            By.XPATH,
+            f'.{target_element_xpath}[contains(normalize-space(), "{label}")]',
+        )
+
+        if element:
+            return self.__create_child_element(target_element_class, element, label)
+        else:
+            raise LookupError(
+                f"Could not find element of {target_element_class.__name__} with label: {label}"
+            )
+
+    @with_timeout()
     def find_element_by_label(
         self, target_element_class: Type[T], label: str, timeout=0
     ) -> T:
