@@ -140,7 +140,13 @@ class Element(Loggable):
         current_dom_element = self.get_current_dom_element()
         target_element_xpath = target_element_class.get_current_element_xpath()
         element = current_dom_element.find_element(
-            By.XPATH, f'.{target_element_xpath}[contains(normalize-space(), "{label}")]'
+            By.XPATH,
+            " | ".join(
+                [
+                    f'.{target_element_xpath}[normalize-space()="{label}"]',
+                    f'.{target_element_xpath}/*[normalize-space()="{label}"]',
+                ]
+            ),
         )
 
         if element:
