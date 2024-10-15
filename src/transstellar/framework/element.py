@@ -166,7 +166,7 @@ class Element(Loggable):
             " | ".join(
                 [
                     f'.{target_element_xpath}[normalize-space()="{label}"]',
-                    f'.{target_element_xpath}//*[normalize-space()="{label}"]/ancestor::{target_element_class.get_xpath().replace("//", "")}',
+                    f'.{target_element_xpath}//*[normalize-space()="{label}"]/ancestor::{target_element_class.get_xpath().replace("//", "", 1)}',
                 ]
             ),
         )
