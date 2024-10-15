@@ -38,7 +38,6 @@ class Element(Loggable):
         self.app = app
         self.injector = app.container
         self.driver = app.driver
-        self.init()
 
     def init(self):
         pass
@@ -426,6 +425,7 @@ class Element(Loggable):
     ) -> T:
         child_element = child_element_class(self.app)
         child_element.set_current_dom_element(child_dom_element)
+        child_element.init()
 
         if label:
             child_element.label = label
