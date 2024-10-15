@@ -163,12 +163,7 @@ class Element(Loggable):
         target_element_xpath = target_element_class.get_current_element_xpath()
         element = current_dom_element.find_element(
             By.XPATH,
-            " | ".join(
-                [
-                    f'.{target_element_xpath}[normalize-space()="{label}"]',
-                    f'.{target_element_xpath}//*[normalize-space()="{label}"]/ancestor::{target_element_class.get_xpath().replace("//", "", 1)}',
-                ]
-            ),
+            f'.{target_element_xpath}[descendant::text()[normalize-space()="{label}"]]',
         )
 
         if element:
