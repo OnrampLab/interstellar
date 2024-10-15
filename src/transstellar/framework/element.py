@@ -141,7 +141,7 @@ class Element(Loggable):
         target_element_xpath = target_element_class.get_current_element_xpath()
         element = current_dom_element.find_element(
             By.XPATH,
-            f'.{target_element_xpath}[contains(normalize-space(), "{label}")]',
+            f'.{target_element_xpath}[descendant::text()[contains(normalize-space(), "{label}")]]',
         )
 
         if element:
