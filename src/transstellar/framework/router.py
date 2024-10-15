@@ -45,7 +45,7 @@ class Router(Loggable):
         return page
 
     def build_page(self, page_class):
-        return page_class(self)
+        return page_class.create_element(self)
 
     def go_to_url(self, url: str):
         if url != self.app.driver.current_url:

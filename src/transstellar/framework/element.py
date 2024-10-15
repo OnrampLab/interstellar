@@ -46,6 +46,13 @@ class Element(Loggable):
         pass
 
     @classmethod
+    def create_element(cls, app):
+        instance = cls(app)
+        instance.init()
+
+        return instance
+
+    @classmethod
     def get_current_element_xpath(cls):
         return cls.get_xpath()
 

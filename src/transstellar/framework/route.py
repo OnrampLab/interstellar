@@ -26,4 +26,4 @@ class Route:
         return Route(path, route_key, page_class)
 
     def get_page(self, app):
-        return self.page_class(app)
+        return self.page_class.create_element(app)
