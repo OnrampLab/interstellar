@@ -2,10 +2,10 @@ import os
 from datetime import datetime
 
 from transstellar.api_client import APIClient
-from transstellar.framework.base_test import BaseTest
+from transstellar.framework.base_api_test import BaseApiTest
 
 
-class TestAPIClient(BaseTest):
+class TestAPIClient(BaseApiTest):
     def setup_method(self):
         self.token = os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN")
         self.api_client = APIClient("https://api.github.com")
