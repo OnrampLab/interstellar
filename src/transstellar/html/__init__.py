@@ -7,6 +7,7 @@ __all__ = [
     "H2",
     "Header",
     "Image",
+    "Input",
     "Li",
     "Span",
     "Ul",
@@ -20,6 +21,7 @@ from .h1 import H1
 from .h2 import H2
 from .header import Header
 from .image import Image
+from .input import Input
 from .li import Li
 from .span import Span
 from .ul import Ul
