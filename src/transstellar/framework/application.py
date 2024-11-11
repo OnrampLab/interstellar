@@ -1,19 +1,20 @@
-import logging
 import os
 from typing import Type
-from urllib.parse import ParseResult, urlparse, urlunparse
+from urllib.parse import ParseResult, urlparse
 
 from injector import Injector
 from pytest import FixtureRequest
 from selenium.webdriver import ChromeOptions, Remote
 from selenium.webdriver.remote.webdriver import WebDriver
 
+from transstellar.framework.loggable import Loggable
+
 from .main_config import MainConfig
 from .module import Module
 from .router import Router
 
 
-class Application:
+class Application(Loggable):
     container: Injector
     testrun_uid: str
     request: FixtureRequest
@@ -24,7 +25,9 @@ class Application:
     current_user = None
 
     def __init__(self, params: dict):
-        logging.info("Creating application")
+        super().__init__()
+
+        self.logger.info("Creating application")
 
         options = params.get("options")
         self.request = params.get("request")
@@ -91,16 +94,16 @@ class Application:
         if self.closed:
             return
 
-        logging.info("Closing application")
+        self.logger.info("Closing application")
 
         if self.is_e2e_enabled():
             self.driver.quit()
-            logging.info("Driver closed")
+            self.logger.info("Driver closed")
 
         self.e2e_enabled = False
         self.closed = True
 
-        logging.info("Application closed")
+        self.logger.info("Application closed")
 
     def set_current_user(self, user):
         if not self.is_e2e_enabled():
@@ -123,14 +126,14 @@ class Application:
             with open(file=f"logs/pytest_{worker_id}.log", mode="w", encoding="utf-8"):
                 pass
 
-            logging.basicConfig(
-                format=self.request.config.getini("log_file_format"),
+            self.logger.configure(
+                file_format=self.request.config.getini("log_file_format"),
                 filename=f"logs/pytest_{worker_id}.log",
                 level=self.request.config.getini("log_file_level"),
             )
 
     def __init_driver__(self) -> WebDriver:
-        logging.info("Initializing driver")
+        self.logger.info("Initializing driver")
         selenium_cmd_executor = os.environ.get(
             "SELENIUM_CMD_EXECUTOR", "http://selenium:4444/wd/hub"
         )
@@ -140,6 +143,6 @@ class Application:
         options.add_argument("--disable-dev-shm-usage")
         driver = Remote(command_executor=selenium_cmd_executor, options=options)
         driver.implicitly_wait(implicitly_wait_time)
-        logging.info("Driver initialized")
+        self.logger.info("Driver initialized")
 
         return driver

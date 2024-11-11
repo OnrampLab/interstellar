@@ -7,6 +7,13 @@ class Logger:
     def __init__(self, class_name) -> None:
         self.class_name = class_name
 
+    def configure(self, file_format, filename, level):
+        logging.basicConfig(
+            format=file_format,
+            filename=filename,
+            level=level,
+        )
+
     def debug(self, msg, *args, **kwargs):
         logging.debug(self.__get_message(msg), *args, **kwargs)
 

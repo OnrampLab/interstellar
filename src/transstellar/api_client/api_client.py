@@ -1,25 +1,29 @@
 import http
 import json
-import logging
 
 import requests
+
+from transstellar.framework.loggable import Loggable
 
 from .errors import ClientError, ServerError, UnauthorizedError
 
 
-class APIClient:
+class APIClient(Loggable):
     token = ""
     headers = {"content-type": "application/json", "accept": "application/json"}
-    httpclient_logger = logging.getLogger("http.client")
 
-    def __init__(self, base_url: str, options={}):
+    def __init__(self, base_url: str, options=None):
+        super().__init__()
+
         self.base_url = base_url
 
-        if options.get("debug") == True:
-            global httpclient_logger
+        if options is None:
+            options = {}
+
+        if options.get("debug") is True:
 
             def httpclient_log(*args):
-                self.httpclient_logger.log(logging.DEBUG, " ".join(args))
+                self.logger.debug(" ".join(args))
 
             # mask the print() built-in in the http.client module to use
             # logging instead

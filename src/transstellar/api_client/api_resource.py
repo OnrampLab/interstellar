@@ -1,10 +1,13 @@
+from ..framework.loggable import Loggable
 from .api_client import APIClient
 
 
-class APIResource:
+class APIResource(Loggable):
     EMPTY_PATH_PARAMS = {}
 
     def __init__(self, base_endpoint_template: str, api_client: APIClient):
+        super().__init__()
+
         self.base_endpoint_template = base_endpoint_template
         self.api_client = api_client
 
