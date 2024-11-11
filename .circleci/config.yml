@@ -40,6 +40,10 @@ jobs:
           command: poetry run pylint */*.py */*/*.py */*/*/*.py
 
       - run:
+          name: Run Code Complexity Analysis
+          command: poetry run radon cc */*/*/*.py -a
+
+      - run:
           name: Run tests
           command: poetry run pytest -n 4 --dist=loadscope --junitxml=test-results/junit.xml
 
