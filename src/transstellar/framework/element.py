@@ -24,6 +24,7 @@ from .utils import (
 T = TypeVar("T")
 
 
+# pylint: disable=R0904
 class Element(Loggable):
     XPATH_CURRENT = None
 
@@ -79,10 +80,8 @@ class Element(Loggable):
 
         if element:
             return self.__create_child_element(target_element_class, element)
-        else:
-            raise LookupError(
-                f"Could not find element of {target_element_class.__name__}"
-            )
+
+        raise LookupError(f"Could not find element of {target_element_class.__name__}")
 
     def click(self):
         self.get_current_dom_element().click()
@@ -130,17 +129,18 @@ class Element(Loggable):
                     elements,
                 )
             )
-        else:
-            raise LookupError(
-                f"Could not find elements of {target_element_class.__name__}"
-            )
+
+        raise LookupError(f"Could not find elements of {target_element_class.__name__}")
 
     @with_timeout()
     def find_element_by_fuzzy_label(
         self, target_element_class: Type[T], label: str, timeout=0
     ) -> T:
         self.logger.debug(
-            f"find element ({target_element_class.__name__}) by label: {label} with timeout: {timeout}"
+            "find element (%s) by fuzzy label: %s with timeout: %s",
+            target_element_class.__name__,
+            label,
+            timeout,
         )
 
         current_dom_element = self.get_current_dom_element()
@@ -152,17 +152,20 @@ class Element(Loggable):
 
         if element:
             return self.__create_child_element(target_element_class, element, label)
-        else:
-            raise LookupError(
-                f"Could not find element of {target_element_class.__name__} with label: {label}"
-            )
+
+        raise LookupError(
+            f"Could not find element of {target_element_class.__name__} with label: {label}"
+        )
 
     @with_timeout()
     def find_element_by_label(
         self, target_element_class: Type[T], label: str, timeout=0
     ) -> T:
         self.logger.debug(
-            f"find element ({target_element_class.__name__}) by label: {label} with timeout: {timeout}"
+            "find element (%s) by label: %s with timeout: %s",
+            target_element_class.__name__,
+            label,
+            timeout,
         )
 
         current_dom_element = self.get_current_dom_element()
@@ -174,10 +177,10 @@ class Element(Loggable):
 
         if element:
             return self.__create_child_element(target_element_class, element, label)
-        else:
-            raise LookupError(
-                f"Could not find element of {target_element_class.__name__} with label: {label}"
-            )
+
+        raise LookupError(
+            f"Could not find element of {target_element_class.__name__} with label: {label}"
+        )
 
     def find_next_element(
         self, target_element_class: Type[T], original_element_class, timeout=0
@@ -219,10 +222,10 @@ class Element(Loggable):
 
         if dom_element:
             return self.__create_child_element(target_element_class, dom_element)
-        else:
-            raise LookupError(
-                f"Could not find next element {target_element_class.__name__}"
-            )
+
+        raise LookupError(
+            f"Could not find next element {target_element_class.__name__}"
+        )
 
     @with_timeout()
     def get_preceding_element(self, target_element_class: Type[T], timeout=0) -> T:
@@ -236,17 +239,20 @@ class Element(Loggable):
 
         if dom_element:
             return self.__create_child_element(target_element_class, dom_element)
-        else:
-            raise LookupError(
-                f"Could not find preceding element {target_element_class.__name__}"
-            )
+
+        raise LookupError(
+            f"Could not find preceding element {target_element_class.__name__}"
+        )
 
     @with_timeout()
     def find_element_by_id(
         self, target_element_class: Type[T], dom_id: str, timeout=0
     ) -> T:
         self.logger.debug(
-            f"find element ({target_element_class.__name__}) by id: {dom_id} with timeout: {timeout}"
+            "find element (%s) by id: %s with timeout: %s",
+            target_element_class.__name__,
+            dom_id,
+            timeout,
         )
 
         current_dom_element = self.get_current_dom_element()
@@ -257,10 +263,10 @@ class Element(Loggable):
 
         if element:
             return self.__create_child_element(target_element_class, element)
-        else:
-            raise LookupError(
-                f"Could not find element of {target_element_class.__name__} with id: {dom_id}"
-            )
+
+        raise LookupError(
+            f"Could not find element of {target_element_class.__name__} with id: {dom_id}"
+        )
 
     def is_element_present(self, target_element_class: Type[T]) -> T:
         try:
@@ -481,7 +487,7 @@ class Element(Loggable):
 
         if element:
             return self.__create_child_element(target_element_class, element)
-        else:
-            raise LookupError(
-                f"Could not find {method} element {target_element_class.__name__} of xpath: {xpath}"
-            )
+
+        raise LookupError(
+            f"Could not find {method} element {target_element_class.__name__} of xpath: {xpath}"
+        )

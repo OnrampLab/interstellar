@@ -3,6 +3,7 @@ import pytest
 from modules.app import ApplicationBootstrapper
 
 
+# pylint: disable=W0613
 def pytest_runtest_protocol(item, nextitem):
     pass
 

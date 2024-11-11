@@ -16,7 +16,7 @@ class TestGithubAPI(BaseApiTest):
 
     def test_search_users(self):
         search_endpoint = f"{self.api_base_url}/search/users"
-        response = requests.get(search_endpoint, params={"q": "john"})
+        response = requests.get(url=search_endpoint, params={"q": "john"}, timeout=10)
 
         assert response.status_code == 200
         assert "items" in response.json()
@@ -25,7 +25,7 @@ class TestGithubAPI(BaseApiTest):
     def test_get_user(self):
         username = self.github_module.get_test_account().get_username()
         user_endpoint = f"{self.api_base_url}/users/{username}"
-        response = requests.get(user_endpoint)
+        response = requests.get(url=user_endpoint, timeout=10)
 
         assert response.status_code == 200
         assert response.json()["login"] == username

@@ -5,6 +5,7 @@ from transstellar.api_client import APIClient
 from transstellar.framework.base_api_test import BaseApiTest
 
 
+# pylint: disable=R0801
 class TestAPIClient(BaseApiTest):
     def setup_method(self):
         self.token = os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN")

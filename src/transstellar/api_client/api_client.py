@@ -43,7 +43,7 @@ class APIClient(Loggable):
         return self.__get(url, params, headers)
 
     def post(
-        self, endpoint, payload, headers=None, expected_successful_status_code=201
+        self, endpoint, payload=None, headers=None, expected_successful_status_code=201
     ):
         url = f"{self.base_url}/{endpoint}"
         return self.__post(url, payload, headers, expected_successful_status_code)
@@ -66,31 +66,31 @@ class APIClient(Loggable):
     def __get(self, url, params, headers):
         headers = self.__get_headers(headers)
 
-        response = requests.get(url, params=params, headers=headers)
+        response = requests.get(url, params=params, headers=headers, timeout=10)
 
         return self.__handle_response(response)
 
-    def __post(self, url, payload, headers={}, expected_successful_status_code=201):
+    def __post(self, url, payload, headers=None, expected_successful_status_code=201):
         headers = self.__get_headers(headers)
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
 
         return self.__handle_response(response, expected_successful_status_code)
 
-    def __patch(self, url, payload, headers={}, expected_successful_status_code=200):
+    def __patch(self, url, payload, headers=None, expected_successful_status_code=200):
         headers = self.__get_headers(headers)
-        response = requests.patch(url, json=payload, headers=headers)
+        response = requests.patch(url, json=payload, headers=headers, timeout=10)
 
         return self.__handle_response(response, expected_successful_status_code)
 
-    def __put(self, url, payload, headers={}, expected_successful_status_code=200):
+    def __put(self, url, payload, headers=None, expected_successful_status_code=200):
         headers = self.__get_headers(headers)
-        response = requests.put(url, json=payload, headers=headers)
+        response = requests.put(url, json=payload, headers=headers, timeout=10)
 
         return self.__handle_response(response, expected_successful_status_code)
 
-    def __delete(self, url, headers={}):
+    def __delete(self, url, headers=None):
         headers = self.__get_headers(headers)
-        response = requests.delete(url, headers=headers)
+        response = requests.delete(url, headers=headers, timeout=10)
 
         return self.__handle_response(response, expected_successful_status_code=204)
 
@@ -108,26 +108,28 @@ class APIClient(Loggable):
         if response.text:
             response_json = json.loads(response.text)
 
-        if status_code >= 200 and status_code < 300:
+        if 200 <= status_code < 300:
             if status_code != expected_successful_status_code:
-                raise Exception(
-                    f"Response status code ({status_code}) is not as expected: {expected_successful_status_code}"
+                raise RuntimeError(
+                    # pylint: disable-next=C0301
+                    "Response status code ({status_code}) is not as expected: {expected_successful_status_code}"
                 )
             return response_json
 
-        if status_code >= 400 and status_code < 500:
+        if 400 <= status_code < 500:
             error_message = response_json.get("message", "Unknown client error")
 
             if status_code == 400:
                 raise ClientError(f"Client error: {error_message}")
 
-            elif status_code == 401:
+            if status_code == 401:
                 raise UnauthorizedError("Unauthorized: Check your credentials")
 
-            else:
-                error_message = response_json.get("message", "Unknown client error")
-                raise ClientError(f"Client error: HTTP {status_code}. {error_message}")
+            error_message = response_json.get("message", "Unknown client error")
+            raise ClientError(f"Client error: HTTP {status_code}. {error_message}")
 
         if status_code >= 500:
             error_message = response_json.get("message", "Internal Server Error")
             raise ServerError(f"Server error: HTTP {status_code}. {error_message}")
+
+        raise ServerError(f"Unknown server error: HTTP {status_code}. {error_message}")

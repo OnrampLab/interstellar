@@ -22,6 +22,7 @@ class HeaderIconLink(Element):
     XPATH_CURRENT = '//a[@href="/"]'
 
 
+# pylint: disable=R0904
 @handle_ui_error()
 class TestElement(BaseUITest, unittest.TestCase):
     page: Page

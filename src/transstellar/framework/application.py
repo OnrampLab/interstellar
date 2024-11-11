@@ -14,6 +14,7 @@ from .module import Module
 from .router import Router
 
 
+# pylint: disable-next=R0902
 class Application(Loggable):
     container: Injector
     testrun_uid: str
