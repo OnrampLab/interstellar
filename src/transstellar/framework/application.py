@@ -46,6 +46,7 @@ class Application(Loggable):
             self.options = {}
 
         self.__configure_log__()
+        self.__remove_existing_screenshots__()
         self.register_routes(routes)
 
     def init_e2e(self):
@@ -132,6 +133,17 @@ class Application(Loggable):
                 filename=f"logs/pytest_{worker_id}.log",
                 level=self.request.config.getini("log_file_level"),
             )
+
+    def __remove_existing_screenshots__(self):
+        screenshots_dir = os.path.join(os.getcwd(), "screenshots")
+
+        if not os.path.exists(screenshots_dir):
+            os.makedirs(screenshots_dir)
+        else:
+            for file_name in os.listdir(screenshots_dir):
+                file_path = os.path.join(screenshots_dir, file_name)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
 
     def __init_driver__(self) -> WebDriver:
         self.logger.info("Initializing driver")
