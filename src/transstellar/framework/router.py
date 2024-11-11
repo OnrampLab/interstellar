@@ -40,7 +40,6 @@ class Router(Loggable):
         route = self.get_route(route_key)
 
         page = route.get_page(self.app)
-        page.wait_for_ready()
 
         return page
 
