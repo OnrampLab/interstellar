@@ -45,7 +45,7 @@ jobs:
 
       - run:
           name: Run tests
-          command: poetry run pytest -n 4 --dist=loadscope --junitxml=test-results/junit.xml
+          command: poetry run pytest --dist=loadscope --junitxml=test-results/junit.xml
 
       - store_test_results:
           path: test-results
