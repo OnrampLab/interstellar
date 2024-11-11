@@ -19,7 +19,7 @@ class TestApplication:
             "request": request,
             "testrun_uid": testrun_uid,
             "routes": [
-                Route("/dashboard", "dashboard", BasePage),
+                Route("/enterprise", "enterprise", BasePage),
                 Route("/projects/{project_id}", "project_detail", BasePage),
             ],
         }
@@ -62,11 +62,11 @@ class TestApplication:
     def test_go_to(self):
         self.app.init_e2e()
 
-        self.app.go_to("dashboard")
+        self.app.go_to("enterprise")
 
         path = self.app.get_current_url().path
 
-        assert path == "/dashboard"
+        assert path == "/enterprise"
 
     def test_go_to_with_path_params(self):
         self.app.init_e2e()
@@ -80,9 +80,9 @@ class TestApplication:
     def test_get_page(self):
         self.app.init_e2e()
 
-        dashboard_page = self.app.get_page("dashboard")
+        enterprise_page = self.app.get_page("enterprise")
 
-        assert dashboard_page is not None
+        assert enterprise_page is not None
 
     def test_is_logged_in(self):
         self.app.init_e2e()

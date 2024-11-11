@@ -7,7 +7,7 @@ import pytest
 from selenium.webdriver.remote.webelement import WebElement
 
 from transstellar.framework import BaseUITest, Element, handle_ui_error
-from transstellar.html import Body, Button, Div, Header, Image, Li
+from transstellar.html import A, Body, Button, Div, Header, Image, Li
 
 
 class Page(Body):
@@ -112,14 +112,14 @@ class TestElement(BaseUITest, unittest.TestCase):
         assert len(images) > 1
 
     def test_find_element_by_fuzzy_label(self):
-        sign_up_button = self.page.find_element_by_fuzzy_label(Button, "Sign up")
+        sign_up_button = self.page.find_element_by_fuzzy_label(A, "Sign up")
 
-        assert isinstance(sign_up_button, Button)
+        assert isinstance(sign_up_button, A)
 
     def test_find_element_by_label(self):
-        sign_up_button = self.page.find_element_by_label(Button, "Sign up for GitHub")
+        sign_up_button = self.page.find_element_by_label(A, "Sign up for GitHub")
 
-        assert isinstance(sign_up_button, Button)
+        assert isinstance(sign_up_button, A)
 
     def test_find_next_element(self):
         div = self.page.find_next_element(
@@ -233,4 +233,4 @@ class TestElement(BaseUITest, unittest.TestCase):
     def test_get_classes(self):
         classes = self.page.get_classes()
 
-        assert "home-campaign" in classes
+        assert "logged-out" in classes
